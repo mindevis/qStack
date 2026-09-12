@@ -1,58 +1,7 @@
-# CHANGELOG — qStack
+# Changelog
 
-> Все изменения документируются на русском языке с английскими параллельными подзаголовками.
+Full version history → **[Wiki: Changelog](https://github.com/mindevis/qStack/wiki/Changelog)**
 
----
+## v0.1.0 (Upcoming)
 
-## [v0.1.0] — 2026-09-12 (Планируется)
-
-### Введено / Features
-
-#### Сервисы / Services
-
-- **auth-service** — аутентификация и авторизация (OAuth2/OIDC, мультифакторность, RBAC)
-- **compute-service** — жизненный цикл виртуальных машин (создание, удаление, resize, snapshoot)
-- **storage-service** — управление блочным и объектным хранилищем (Ceph интеграция)
-- **network-service** — программно-определяемая сеть (VLAN, VXLAN, балансировка)
-- **billing-service** — тарификация, расчёты, интеграции с платёжными системами
-- **notification-service** — многоканальные уведомления (email, SMS, webhook, push)
-- **ai-module** — модуль искусственного интеллекта (прогнозирование нагрузок, аномалии, рекомендации)
-- **gateway-api** — единый API-шлюз с rate-limiting, CORS, валидацией
-- **admin-panel** — веб-панель администрирования (мониторинг, управление, аудит)
-
-#### Схемы баз данных / Database Schemas (7 таблиц)
-
-- **users** — пользователи и роли
-- **instances** — виртуальные машины и их состояния
-- **volumes** — блочные томы и снапшоты
-- **networks** — виртуальные сети и подсети
-- **invoices** — счета и транзакции
-- **audit_logs** — журнал аудита действий
-- **config** — глобальная конфигурация системы
-
-#### Безопасность / Security
-
-- **PCI-DSS соответствие** — шифрование данных в покое и при передаче, токенизация платежей, сегментация сетей
-- Мультифакторная аутентификация для всех привилегированных операций
-- Встроенное сканирование уязвимостей и валидация образов
-
-#### Наблюдаемость / Observability Stack
-
-- **Prometheus** — сбор и хранение метрик
-- **Grafana** — визуализация и дашборды
-- **ELK Stack** (Elasticsearch, Logstash, Kibana) — агрегация и поиск по логам
-- **Jaeger** — распределённая трассировка (distributed tracing)
-- **Alertmanager** — алертинга по порогам и аномалиям
-
----
-
-## Легенда / Legend
-
-| Тег        | Описание / Description                                      |
-|------------|-------------------------------------------------------------|
-| `v0.1.0`   | Начальная запланированная версия / Initial planned release  |
-
----
-
-*Полный журнал изменений доступен в истории коммитов.*
-*Full change history is available in the commit log.*
+Full microservice architecture — 9 services, Talos Linux default runtime, PCI-DSS compliance, Observability stack (Prometheus/Grafana/Loki/GlitchTip), OpenBao secrets.
