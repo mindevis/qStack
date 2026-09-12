@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package qstack.v1;
+
+option go_package = "github.com/mindevis/qstack/pkg/grpc/proto/qstack/v1";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+// --- AI Service ---
+
+service AIService {
+	rpc GetRecommendations(GetRecommendationsRequest) returns (GetRecommendationsResponse);
+	rpc PredictResources(PredictResourcesRequest) returns (PredictResourcesResponse);
+	rpc GetAutoHealActions(GetAutoHealActionsRequest) returns (GetAutoHealActionsResponse);
+	rpc AskAssistant(AskAssistantRequest) returns (AskAssistantResponse);
+	rpc GetHealthInsights(GetHealthInsightsRequest) returns (GetHealthInsightsResponse);
+}
+
+message Recommendation {
+	string id = 1;
+	string type = 2; // scale, migrate, upgrade, alert
+	string title = 3;
+	string description = 4;
+	string target_id = 5;
+	string target_type = 6; // vm, host, cluster
+	float priority = 7;
+	google.protobuf.Timestamp created_at = 8;
+}
+
+message GetRecommendationsRequest {
+	string tenant_id = 1;
+	string cluster_id = 2;
+}
+
+message GetRecommendationsResponse {
+	repeated Recommendation recommendations = 1;
+}
+
+message PredictResourcesRequest {
+	string tenant_id = 1;
+	int32 target_date = 2; // days ahead
+}
+
+message PredictResourcesResponse {
+	int32 predicted_cpu = 1;
+	int32 predicted_memory_mb = 2;
+	int32 predicted_storage_gb = 3;
+	int32 predicted_vms = 4;
+	float confidence = 5;
+}
+
+message AutoHealAction {
+	string id = 1;
+	string target_id = 2;
+	string target_type = 3;
+	string action = 4; // restart, migrate, resize
+	string reason = 5;
+	float confidence = 6;
+}
+
+message GetAutoHealActionsRequest { string cluster_id = 1; }
+message GetAutoHealActionsResponse {
+	repeated AutoHealAction actions = 1;
+}
+
+message AskAssistantRequest {
+	string tenant_id = 1;
+	string query = 2;
+}
+
+message AskAssistantResponse {
+	string answer = 1;
+	repeated string sources = 2;
+}
+
+message HealthInsight {
+	string host_id = 1;
+	string type = 2; // disk_full, memory_leak, cpu_spike
+	float severity = 3;
+	string description = 4;
+}
+
+message GetHealthInsightsRequest { string cluster_id = 1; }
+message GetHealthInsightsResponse {
+	repeated HealthInsight insights = 1;
+}

@@ -9,3 +9,10 @@
 *.css text eol=lf
 *.js text eol=lf
 *.md text eol=lf
+*.go text eol=lf
+*.proto text eol=lf
+go.mod text eol=lf
+go.sum text eol=lf
+go.work text eol=lf
+go.work.sum text eol=lf
+Makefile text eol=lf

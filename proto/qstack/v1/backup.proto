@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package qstack.v1;
+
+option go_package = "github.com/mindevis/qstack/pkg/grpc/proto/qstack/v1";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+// --- Backup Service ---
+
+service BackupService {
+	rpc CreateBackup(CreateBackupRequest) returns (CreateBackupResponse);
+	rpc GetBackup(GetBackupRequest) returns (GetBackupResponse);
+	rpc ListBackups(ListBackupsRequest) returns (ListBackupsResponse);
+	rpc RestoreBackup(RestoreBackupRequest) returns (RestoreBackupResponse);
+	rpc DeleteBackup(DeleteBackupRequest) returns (google.protobuf.Empty);
+	rpc VerifyBackup(VerifyBackupRequest) returns (VerifyBackupResponse);
+	rpc CreateSchedule(CreateScheduleRequest) returns (CreateScheduleResponse);
+	rpc ListSchedules(ListSchedulesRequest) returns (ListSchedulesResponse);
+}
+
+message Backup {
+	string id = 1;
+	string name = 2;
+	string vm_id = 3;
+	string volume_id = 4;
+	int32 size_bytes = 5;
+	string state = 6; // pending, in_progress, completed, failed
+	string checksum = 7;
+	google.protobuf.Timestamp created_at = 8;
+	google.protobuf.Timestamp completed_at = 9;
+}
+
+message CreateBackupRequest {
+	string name = 1;
+	string vm_id = 2;
+	string volume_id = 3;
+}
+
+message CreateBackupResponse { Backup backup = 1; }
+message GetBackupRequest { string id = 1; }
+message GetBackupResponse { Backup backup = 1; }
+
+message ListBackupsRequest {
+	string vm_id = 1;
+	string volume_id = 2;
+}
+
+message ListBackupsResponse {
+	repeated Backup backups = 1;
+	int32 total = 2;
+}
+
+message RestoreBackupRequest { string backup_id = 1; }
+message RestoreBackupResponse { string vm_id = 1; }
+message DeleteBackupRequest { string id = 1; }
+
+message VerifyBackupRequest { string backup_id = 1; }
+message VerifyBackupResponse {
+	string backup_id = 1;
+	bool valid = 2;
+	string checksum_match = 3;
+	string error = 4;
+}
+
+message Schedule {
+	string id = 1;
+	string name = 2;
+	string vm_id = 3;
+	string cron = 4;
+	int32 retention_days = 5;
+	bool active = 6;
+}
+
+message CreateScheduleRequest {
+	string name = 1;
+	string vm_id = 2;
+	string cron = 3;
+	int32 retention_days = 4;
+}
+
+message CreateScheduleResponse { Schedule schedule = 1; }
+message ListSchedulesRequest { string vm_id = 1; }
+message ListSchedulesResponse { repeated Schedule schedules = 1; }
