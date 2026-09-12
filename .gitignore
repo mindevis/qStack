@@ -1,2 +1,10 @@
 # Architecture plan (living document)
 plan.md
+
+# Generated artifacts (recreate with: python scripts/check_deps.py --generate)
+cluster.yaml
+setup.sh
+talosconfig
+*.vdi
+*.vbox-extpack
+talos-*.iso
