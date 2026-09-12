@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Развёртывание — qStack Docs</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<header class="header">
+  <button class="menu-toggle" aria-label="Меню"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+  <a href="index.html" class="header-logo"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>qStack Docs</span></a>
+  <div class="header-center"><div class="header-search"><svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="search-input" type="text" placeholder="Поиск…" autocomplete="off"><span class="search-shortcut">⌘K</span><div id="search-results" class="search-results"></div></div></div>
+  <div class="header-right"><button class="header-btn" id="lang-toggle">EN</button><button class="header-btn" id="theme-toggle"><span class="theme-icon">🌙</span></button><a href="https://github.com/mindever/qStack" class="header-btn" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 016.02 0c2.3-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.82.58A12.01 12.01 0 0024 12c0-6.63-5.37-12-12-12z"/></svg></a></div>
+</header>
+<div class="sidebar-overlay"></div>
+<nav class="sidebar">
+  <div class="sidebar-group"><div class="sidebar-group-title">Обзор</div><a href="index.html" class="sidebar-link">Введение</a><a href="architecture.html" class="sidebar-link">Архитектура</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">Сервисы</div><a href="services.html#api" class="sidebar-link">API Gateway</a><a href="services.html#compute" class="sidebar-link">Compute</a><a href="services.html#storage" class="sidebar-link">Storage</a><a href="services.html#network" class="sidebar-link">Network</a><a href="services.html#image" class="sidebar-link">Image</a><a href="services.html#billing" class="sidebar-link">Billing</a><a href="services.html#backup" class="sidebar-link">Backup</a><a href="services.html#ai" class="sidebar-link">AI</a><a href="services.html#agent" class="sidebar-link">Agent</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">API</div><a href="api.html" class="sidebar-link">REST API</a><a href="api.html#grpc" class="sidebar-link">gRPC</a><a href="api.html#auth" class="sidebar-link">Авторизация</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">Развёртывание</div><a href="deployment.html" class="sidebar-link active">Kubernetes</a><a href="deployment.html#docker-compose" class="sidebar-link">Docker Compose</a><a href="deployment.html#ci-cd" class="sidebar-link">CI/CD</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">Разработка</div><a href="development.html" class="sidebar-link">Настройка окружения</a><a href="development.html#testing" class="sidebar-link">Тестирование</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">Участие</div><a href="contributing.html" class="sidebar-link">Contributing</a><a href="changelog.html" class="sidebar-link">Changelog</a></div>
+</nav>
+<main class="layout">
+  <div class="main">
+    <div class="main-inner">
+      <div class="content">
+        <h1>Развёртывание</h1>
+        <p>qStack разворачивается в Kubernetes cluster для control plane. Агенты запускаются как native <code>systemd</code> сервисы на bare-metal хостах.</p>
+
+        <h2 id="k8s">Kubernetes Architecture</h2>
+        <div class="ascii-diagram">
+┌───────────────────────────────────────────────────────────────────────┐
+│                   Kubernetes Cluster                                  │
+│                                                                       │
+│  ┌───────────────────┐  ┌──────────────────────┐  ┌──────────────┐   │
+│  │  qstack-api       │  │  qstack-compute      │  │ qstack-image │   │
+│  │  Deployment (3+)  │  │  StatefulSet (1+1)   │  │ Deployment   │   │
+│  │  Ingress → API    │  │  Leader + Standby   │  │ (1 worker)   │   │
+│  └───────────────────┘  └──────────────────────┘  └──────────────┘   │
+│                                                                       │
+│  ┌───────────────────┐  ┌──────────────────────┐  ┌──────────────┐   │
+│  │  qstack-billing   │  │  qstack-backup       │  │  qstack-ai   │   │
+│  │  Deployment (1)   │  │  Deployment (1)      │  │  Deployment  │   │
+│  │  Meter/Invoice    │  │  Snapshot/Restore    │  │  (1 worker)  │   │
+│  └───────────────────┘  └──────────────────────┘  └──────────────┘   │
+│                                                                       │
+│  ┌───────────────┐   ┌──────────────┐   ┌──────────┐                 │
+│  │  PostgreSQL   │   │  NATS (3x)   │   │   CA     │                 │
+│  │  (state)      │   │  (events)    │   │  (certs) │                 │
+│  └───────────────┘   └──────────────┘   └──────────┘                 │
+└───────────────────────────────────────────────────────────────────────┘
+           │ gRPC + NATS
+┌──────────▼───────────────────────────────────────────────────────────┐
+│         Hypervisor Hosts (Bare Metal / VM)                          │
+│  ┌────────────┐  ┌────────────┐  ┌────────────┐                    │
+│  │ qstack-agent│  │qstack-agent│  │qstack-agent│ ...               │
+│  │ systemd svc │  │systemd svc │  │systemd svc │                    │
+│  └──────┬─────┘  └──────┬─────┘  └──────┬─────┘                    │
+│         │               │                │                          │
+│  ┌──────▼─────┐ ┌──────▼─────┐ ┌───────▼─────┐                     │
+│  │  Libvirt   │ │  Libvirt   │ │  Libvirt    │                     │
+│  │  + QEMU    │ │  + QEMU    │ │  + QEMU     │                     │
+│  └────────────┘ └────────────┘ └─────────────┘                     │
+└──────────────────────────────────────────────────────────────────────┘</div>
+
+        <h2 id="k8s-manifests">Структура K8s манифестов</h2>
+        <div class="code-header">k8s/</div>
+<pre><code>k8s/
+├── common/                # namespace, postgres, nats, cert-manager, glitchtip
+│   ├── namespace.yaml
+│   ├── postgres.yaml      # Patroni + PgBouncer (3 replicas prod)
+│   ├── nats.yaml          # NATS cluster (3 replicas, JetStream)
+│   ├── cert-manager.yaml  # Internal CA
+│   └── glitchtip.yaml     # Self-hosted Sentry
+├── api/                   # qstack-api deployment
+│   ├── deployment.yaml    # Deployment (3+), HPA
+│   ├── service.yaml       # ClusterIP
+│   ├── ingress.yaml       # Ingress /api/*
+│   └── pdb.yaml           # PodDisruptionBudget (minAvailable: 2)
+├── compute/               # qstack-compute
+│   ├── statefulset.yaml   # StatefulSet (1+1)
+│   ├── service.yaml
+│   └── pdb.yaml
+├── storage/               # qstack-storage
+│   ├── deployment.yaml
+│   └── service.yaml
+├── network/               # qstack-network
+├── image/                 # qstack-image
+├── billing/               # qstack-billing
+├── backup/                # qstack-backup
+└── ai/                    # qstack-ai</code></pre>
+
+        <h3>Resource Profiles</h3>
+        <div class="table-wrapper">
+<table>
+<thead><tr><th>Сервис</th><th>CPU Req</th><th>CPU Lim</th><th>Mem Req</th><th>Mem Lim</th><th>Примечание</th></tr></thead>
+<tbody>
+<tr><td><code>qstack-api</code></td><td>250m</td><td>1000m</td><td>256Mi</td><td>512Mi</td><td>Stateless, горизонтальное масштабирование</td></tr>
+<tr><td><code>qstack-compute</code></td><td>500m</td><td>1000m</td><td>512Mi</td><td>1Gi</td><td>Leader election, reconciler</td></tr>
+<tr><td><code>qstack-storage</code></td><td>250m</td><td>500m</td><td>256Mi</td><td>512Mi</td><td>gRPC server, DB queries</td></tr>
+<tr><td><code>qstack-network</code></td><td>250m</td><td>500m</td><td>256Mi</td><td>512Mi</td><td>IPAM, subnet management</td></tr>
+<tr><td><code>qstack-image</code></td><td>500m</td><td>2000m</td><td>512Mi</td><td>4Gi</td><td>Image builds — CPU/memory intensive</td></tr>
+<tr><td><code>qstack-billing</code></td><td>250m</td><td>500m</td><td>256Mi</td><td>512Mi</td><td>Metering + invoicing</td></tr>
+<tr><td><code>qstack-backup</code></td><td>250m</td><td>500m</td><td>256Mi</td><td>1Gi</td><td>Snapshot operations</td></tr>
+<tr><td><code>qstack-ai</code></td><td>500m</td><td>2000m</td><td>512Mi</td><td>2Gi</td><td>LLM context, predictions</td></tr>
+</tbody>
+</table>
+        </div>
+
+        <h3>Pod Disruption Budget</h3>
+        <div class="code-header">YAML</div>
+<pre><code>apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: qstack-api-pdb
+spec:
+  minAvailable: 2  # минимум 2 replicas во время eviction
+  selector:
+    matchLabels:
+      app: qstack-api</code></pre>
+
+        <h3>HPA for API Gateway</h3>
+        <p>Масштабирование от 3 до 10 реплик на основе CPU (порог 70%).</p>
+
+        <h2 id="docker-compose">Docker Compose (Development)</h2>
+        <p>Для локальной разработки используется <code>docker-compose.yml</code> с полной инфраструктурой:</p>
+        <div class="code-header">docker-compose.yml</div>
+<pre><code>services:
+  # Infrastructure
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: qstack
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+
+  nats:
+    image: nats:2.10
+    command: ["-js", "-store_dir", "/data"]
+    ports: ["4222:4222", "8222:8222"]
+    volumes: ["natsdata:/data"]
+
+  # Observability
+  prometheus:
+    image: prom/prometheus
+    ports: ["9090:9090"]
+  grafana:
+    image: grafana/grafana
+    ports: ["3000:3000"]
+  loki:
+    image: grafana/loki
+    ports: ["3100:3100"]
+  glitchtip:
+    image: glitchtip/glitchtip
+    ports: ["8081:8000"]
+
+  # Services (built locally)
+  api:
+    build: ./services/api
+    ports: ["8080:8080"]
+    environment:
+      - QSTACK_NATS_URL=nats://nats:4222
+      - QSTACK_PG_URL=postgres://qstack@postgres:5432/qstack
+    depends_on: [postgres, nats]
+
+  compute:
+    build: ./services/compute
+    environment:
+      - QSTACK_NATS_URL=nats://nats:4222
+      - QSTACK_PG_URL=postgres://qstack@postgres:5432/qstack
+    depends_on: [postgres, nats]
+
+  storage:
+    build: ./services/storage
+  network:
+    build: ./services/network
+  image:
+    build: ./services/image
+  billing:
+    build: ./services/billing
+  backup:
+    build: ./services/backup
+  ai:
+    build: ./services/ai
+
+volumes:
+  pgdata:
+  natsdata:</code></pre>
+
+        <h2 id="ci-cd">CI/CD Pipeline</h2>
+        <p>GitHub Actions → kind → k3d</p>
+
+        <h3>Workflow</h3>
+        <div class="ascii-diagram">
+  Push/MR  ──→  ┌────────────┐
+                │ Build all  │
+                │ (go build) │
+                └─────┬──────┘
+                      │
+                      ▼
+  ┌────────────┐  ┌────────────┐
+  │ Unit Tests │──>│ Lint      │
+  │ (go test)  │  │ (golangci- │
+  └────────────┘  │  lint)     │
+                  └─────┬──────┘
+                        │
+                        ▼
+              ┌─────────────────┐
+              │ kind cluster    │
+              │ (K8s in Docker) │
+              │ Deploy all Svc  │
+              │ + Infra         │
+              └────────┬────────┘
+                       │
+                       ▼
+              ┌─────────────────┐
+              │ E2E Tests       │
+              │ (against kind)  │
+              └────────┬────────┘
+                       │
+                       ▼
+              ┌─────────────────┐
+              │ k3d cluster     │
+              │ (Staging)       │
+              └─────────────────┘</div>
+
+        <h3>GitHub Actions</h3>
+        <div class="code-header">.github/workflows/ci.yml</div>
+<pre><code>name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.23' }
+      - run: make build
+      - run: make test
+      - run: make lint
+
+  deploy-kind:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: make kind-up
+      - run: make kind-deploy
+      - run: make kind-e2e
+      - run: make kind-down</code></pre>
+
+        <h2 id="upgrade">Стратегия апдейтов</h2>
+        <h3>Rolling update per service</h3>
+        <div class="ascii-diagram">
+1. Deploy new replica alongside old (K8s rolling update)
+2. Leader election: new pod wins lease, old steps down gracefully
+3. Old pod drains (finish in-flight sagas, stop accepting new requests)
+4. Old pod terminates (SIGTERM → graceful shutdown)
+
+Canary (Phase 13+):
+- Deploy v2 to 1 of 3 API pods → monitor error rate/latency → promote or roll back
+- Feature flags для risky changes (toggle без redeploy)
+
+Blue-green (для major schema changes):
+- v1 и v2 side by side, switch traffic at ingress level
+- Обе версии пишут в одну DB (backwards-compatible schema)</div>
+
+        <h3>Graceful Shutdown</h3>
+        <p>Все сервисы обрабатывают SIGTERM (K8s посылает SIGTERM перед kill):</p>
+        <ul>
+          <li><strong>API:</strong> стоп приёма новых запросов, finish in-flight (30s grace)</li>
+          <li><strong>Compute:</strong> pause reconciler, finish current cycle, save state</li>
+          <li><strong>Storage:</strong> finish in-flight volume operations</li>
+          <li><strong>Agent:</strong> save local state cache, clean disconnect</li>
+          <li><strong>Все:</strong> flush NATS publisher, close gRPC server, close DB connections</li>
+        </ul>
+        <p>K8s <code>terminationGracePeriodSeconds: 60</code> + PreStop hook (sleep 10s для drain load balancer).</p>
+
+        <div class="footer">
+          <span><a href="api.html">← API Docs</a></span>
+          <span><a href="development.html">Разработка →</a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <aside class="toc">
+    <div class="toc-title">Содержание</div>
+    <ul class="toc-list">
+      <li><a href="#k8s">Kubernetes Architecture</a></li>
+      <li><a href="#k8s-manifests">K8s манифесты</a>
+        <ul><li class="toc-h3"><a href="#k8s-manifests">Resource Profiles</a></li><li class="toc-h3"><a href="#k8s-manifests">PDB</a></li><li class="toc-h3"><a href="#k8s-manifests">HPA</a></li></ul>
+      </li>
+      <li><a href="#docker-compose">Docker Compose</a></li>
+      <li><a href="#ci-cd">CI/CD Pipeline</a></li>
+      <li><a href="#upgrade">Стратегия апдейтов</a>
+        <ul><li class="toc-h3"><a href="#upgrade">Graceful Shutdown</a></li></ul>
+      </li>
+    </ul>
+  </aside>
+</main>
+<script src="js/main.js"></script>
+</body>
+</html>

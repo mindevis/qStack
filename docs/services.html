@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Сервисы — qStack Docs</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<header class="header">
+  <button class="menu-toggle" aria-label="Меню"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+  <a href="index.html" class="header-logo"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>qStack Docs</span></a>
+  <div class="header-center"><div class="header-search"><svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="search-input" type="text" placeholder="Поиск…" autocomplete="off"><span class="search-shortcut">⌘K</span><div id="search-results" class="search-results"></div></div></div>
+  <div class="header-right"><button class="header-btn" id="lang-toggle">EN</button><button class="header-btn" id="theme-toggle"><span class="theme-icon">🌙</span></button><a href="https://github.com/mindever/qStack" class="header-btn" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 016.02 0c2.3-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.82.58A12.01 12.01 0 0024 12c0-6.63-5.37-12-12-12z"/></svg></a></div>
+</header>
+<div class="sidebar-overlay"></div>
+<nav class="sidebar">
+  <div class="sidebar-group"><div class="sidebar-group-title">Обзор</div><a href="index.html" class="sidebar-link">Введение</a><a href="architecture.html" class="sidebar-link">Архитектура</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">Сервисы</div><a href="services.html#api" class="sidebar-link">API Gateway</a><a href="services.html#compute" class="sidebar-link active">Compute</a><a href="services.html#storage" class="sidebar-link">Storage</a><a href="services.html#network" class="sidebar-link">Network</a><a href="services.html#image" class="sidebar-link">Image</a><a href="services.html#billing" class="sidebar-link">Billing</a><a href="services.html#backup" class="sidebar-link">Backup</a><a href="services.html#ai" class="sidebar-link">AI</a><a href="services.html#agent" class="sidebar-link">Agent</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">API</div><a href="api.html" class="sidebar-link">REST API</a><a href="api.html#grpc" class="sidebar-link">gRPC</a><a href="api.html#auth" class="sidebar-link">Авторизация</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">Развёртывание</div><a href="deployment.html" class="sidebar-link">Kubernetes</a><a href="deployment.html#docker-compose" class="sidebar-link">Docker Compose</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">Разработка</div><a href="development.html" class="sidebar-link">Настройка окружения</a><a href="development.html#testing" class="sidebar-link">Тестирование</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">Участие</div><a href="contributing.html" class="sidebar-link">Contributing</a><a href="changelog.html" class="sidebar-link">Changelog</a></div>
+</nav>
+<main class="layout">
+  <div class="main">
+    <div class="main-inner">
+      <div class="content">
+        <h1>Сервисы qStack</h1>
+        <p>9 независимых микросервисов, каждый со своим <code>go.mod</code>, бинарником, схемой БД и развёртыванием.</p>
+
+        <h2 id="api">API Gateway (qstack-api)</h2>
+        <div class="service-block">
+          <div class="service-block-header"><span class="badge badge-primary">Gateway</span><h3>qstack-api</h3></div>
+          <div class="service-block-body">
+            <dl>
+              <dt>Реплики</dt><dd>3+ (stateless, горизонтальное масштабирование)</dd>
+              <dt>DB Schema</dt><dd>— (stateless facade)</dd>
+              <dt>Ответственность</dt><dd>REST API Gateway, аутентификация (JWT), раздача Dashboard (Admin + User), валидация запросов, Saga orchestration для мульти-сервисных операций</dd>
+              <dt>gRPC клиенты</dt><dd>Подключается ко всем бэкенд-сервисам через gRPC с mTLS</dd>
+              <dt>Ключевые маршруты</dt><dd><code>/v1/vms/*</code>, <code>/v1/networks/*</code>, <code>/v1/storage/*</code>, <code>/v1/billing/*</code>, <code>/v1/ai/*</code>, <code>/admin/*</code>, <code>/user/*</code></dd>
+              <dt>Ключевые функции</dt><dd>Gin router, middleware (CORS, auth, logging, rate limiting), статическая раздача SPA, saga engine</dd>
+            </dl>
+          </div>
+        </div>
+
+        <h2 id="compute">Compute (qstack-compute)</h2>
+        <div class="service-block">
+          <div class="service-block-header"><span class="badge badge-success">Core</span><h3>qstack-compute</h3></div>
+          <div class="service-block-body">
+            <dl>
+              <dt>Реплики</dt><dd>1 активный (leader) + 1 standby</dd>
+              <dt>DB Schema</dt><dd><code>compute_schema</code></dd>
+              <dt>Ответственность</dt><dd>Управление VMs, Hosts, Clusters, Reconciler (desired/actual state), Scheduler (распределение VM), Live Migration, High Availability</dd>
+              <dt>Leader Election</dt><dd>PostgreSQL advisory locks (ранние фазы) → etcd (Phase 3+)</dd>
+              <dt>DB таблицы</dt><dd><code>vms</code>, <code>clusters</code>, <code>hosts</code>, <code>vm_templates</code>, <code>events</code></dd>
+              <dt>K8s</dt><dd>StatefulSet (1+1), PDB</dd>
+            </dl>
+            <h4>Reconciler Loop</h4>
+            <p>Запускается каждые N секунд: 1) Читает <code>desired_state</code> из DB, 2) Запраживает <code>actual_state</code> у libvirt, 3) Сравнивает → применяет исправление при drift, 4) Обновляет <code>actual_state</code>, 5) Логирует событие</p>
+          </div>
+        </div>
+
+        <h2 id="storage">Storage (qstack-storage)</h2>
+        <div class="service-block">
+          <div class="service-block-header"><span class="badge">Core</span><h3>qstack-storage</h3></div>
+          <div class="service-block-body">
+            <dl>
+              <dt>Реплики</dt><dd>1</dd>
+              <dt>DB Schema</dt><dd><code>storage_schema</code></dd>
+              <dt>Ответственность</dt><dd>Storage Pools, Volumes, Snapshots, Attach/Detach дисков к VM</dd>
+              <dt>Поддерживаемые бэкенды</dt><dd>libvirt pools, Ceph RBD, iSCSI, Local filesystem, S3</dd>
+              <dt>DB таблицы</dt><dd><code>storage_pools</code>, <code>storage_volumes</code>, <code>storage_snapshots</code></dd>
+              <dt>Принципы</dt><dd>On/Off (через конфиг), Swappable (смена бэкенда без кода), Async (операции не блокируют VM lifecycle)</dd>
+            </dl>
+          </div>
+        </div>
+
+        <h2 id="network">Network (qstack-network)</h2>
+        <div class="service-block">
+          <div class="service-block-header"><span class="badge">Core</span><h3>qstack-network</h3></div>
+          <div class="service-block-body">
+            <dl>
+              <dt>Реплики</dt><dd>1</dd>
+              <dt>DB Schema</dt><dd><code>network_schema</code></dd>
+              <dt>Ответственность</dt><dd>Networks, IPAM (IP Address Management), Subnets, DHCP, MAC адресация</dd>
+              <dt>Поддерживаемые бэкенды</dt><dd>libvirt networks, macvlan, VLAN</dd>
+              <dt>DB таблицы</dt><dd><code>subnets</code>, <code>ip_addresses</code>, <code>dhcp_leases</code></dd>
+              <dt>IPAM</dt><dd>Полный жизненный цикл IP: subnets, allocation, reservation, DHCP integration</dd>
+            </dl>
+          </div>
+        </div>
+
+        <h2 id="image">Image (qstack-image)</h2>
+        <div class="service-block">
+          <div class="service-block-header"><span class="badge">Core</span><h3>qstack-image</h3></div>
+          <div class="service-block-body">
+            <dl>
+              <dt>Реплики</dt><dd>1</dd>
+              <dt>DB Schema</dt><dd><code>image_schema</code></dd>
+              <dt>Ответственность</dt><dd>Image CRUD, Build/Convert задачи, кэширование на гипервизорах</dd>
+              <dt>Image Builder</dt><dd>ISO boot, cloud-init, kickstart/preseed, base image + overlay, snapshot VM disk → image</dd>
+              <dt>Image Converter</dt><dd>raw ↔ qcow2, vmdk ↔ qcow2, vhd ↔ qcow2</dd>
+              <dt>Image Cache</dt><dd>LRU cache на агентах, sync через NATS, SHA-256 verification</dd>
+              <dt>DB таблицы</dt><dd><code>images</code>, <code>image_cache</code>, <code>image_build_tasks</code></dd>
+            </dl>
+          </div>
+        </div>
+
+        <h2 id="billing">Billing (qstack-billing)</h2>
+        <div class="service-block">
+          <div class="service-block-header"><span class="badge badge-warning">Billing</span><h3>qstack-billing</h3></div>
+          <div class="service-block-body">
+            <dl>
+              <dt>Реплики</dt><dd>1</dd>
+              <dt>DB Schema</dt><dd><code>billing_schema</code></dd>
+              <dt>Ответственность</dt><dd>Tenants, Rate Plans, Usage Metering, Invoices, Quota Enforcement</dd>
+              <dt>Metering</dt><dd>Сбор метрик usage из агентов (NATS topic <code>usage.collected</code>): CPU, RAM, Disk, Network I/O, VM runtime, Snapshots</dd>
+              <dt>Платёжные шлюзы</dt><dd>Stripe, Manual/Internal, extensible (Yookassa, Crypto)</dd>
+              <dt>DB таблицы</dt><dd><code>tenants</code>, <code>rate_plans</code>, <code>usage_records</code>, <code>invoices</code>, <code>invoice_items</code>, <code>payments</code></dd>
+              <dt>Quota</dt><dd>Max VMs, Max CPUs, Max Memory, Max Disk, Max Public IPs, auto-suspend при просрочке</dd>
+            </dl>
+          </div>
+        </div>
+
+        <h2 id="backup">Backup (qstack-backup)</h2>
+        <div class="service-block">
+          <div class="service-block-header"><span class="badge badge-danger">Safety</span><h3>qstack-backup</h3></div>
+          <div class="service-block-body">
+            <dl>
+              <dt>Реплики</dt><dd>1</dd>
+              <dt>DB Schema</dt><dd><code>backup_schema</code></dd>
+              <dt>Ответственность</dt><dd>Планирование бэкапов, создание снапшотов, восстановление, верификация</dd>
+              <dt>Методы</dt><dd>Snapshot (live), Full Copy, Incremental (qcow2 chain), Block Replication (Ceph rbd-mirror), VM Export</dd>
+              <dt>Рекомендуемая стратегия</dt><dd>Hourly snapshots → Daily full copy → Weekly full export → rbd-mirror для DR</dd>
+              <dt>DB таблицы</dt><dd><code>backups</code></dd>
+              <dt>RTO/RPO</dt><dd>VM disk: RTO 10 min, RPO 15 min. Control plane: RTO 15 min, RPO 0 (sync replica)</dd>
+            </dl>
+          </div>
+        </div>
+
+        <h2 id="ai">AI (qstack-ai)</h2>
+        <div class="service-block">
+          <div class="service-block-header"><span class="badge badge-primary">AI/ML</span><h3>qstack-ai</h3></div>
+          <div class="service-block-body">
+            <dl>
+              <dt>Реплики</dt><dd>1</dd>
+              <dt>DB Schema</dt><dd><code>ai_schema</code></dd>
+              <dt>Ответственность</dt><dd>Advisor (рекомендации), Predictor (прогнозы), AutoHeal (ремедиация), Assistant (интерактивный чат)</dd>
+              <dt>AI Provider</dt><dd>OpenAI / Anthropic / Ollama / vLLM / custom (OpenAI-compatible endpoint)</dd>
+              <dt>Advisor</dt><dd>Превентивные рекомендации: over-provisioned VMs, cost optimization, capacity planning, anomaly detection</dd>
+              <dt>Predictor</dt><dd>Предиктивное масштабирование, предсказание сбоев (disk full, node overload), деградация производительности</dd>
+              <dt>AutoHeal</dt><dd>Предлагает remediation для common issues: restart VM, migrate, scale, clear disk</dd>
+              <dt>DB таблицы</dt><dd><code>ai_sessions</code>, <code>ai_advisories</code>, <code>ai_predictions</code>, <code>ai_token_usage</code></dd>
+              <dt>Принципы</dt><dd>On/Off, Provider-agnostic, Local capable (Ollama), Context-aware, Opinionated not autonomous (AI suggests, human confirms)</dd>
+            </dl>
+          </div>
+        </div>
+
+        <h2 id="agent">Agent (qstack-agent)</h2>
+        <div class="service-block">
+          <div class="service-block-header"><span class="badge badge-success">Edge</span><h3>qstack-agent</h3></div>
+          <div class="service-block-body">
+            <dl>
+              <dt>Реплики</dt><dd>N (один на каждый гипервизор-хост)</dd>
+              <dt>DB Schema</dt><dd>— (local cache only)</dd>
+              <dt>Ответственность</dt><dd>Локальное управление libvirt, heartbeat, отчёт о ресурсах, миграция, автономная работа</dd>
+              <dt>State Sync</dt><dd>Периодический sync с control plane, кэширует desired state локально</dd>
+              <dt>Local API</dt><dd>gRPC endpoint для прямого управления без оркестратора</dd>
+              <dt>Health Check</dt><dd>Отчёт о здоровье хоста (CPU, memory, disk, libvirt status)</dd>
+              <dt>Resource Monitor</dt><dd>Трекинг resource usage, отчёт scheduler</dd>
+              <dt>Migration Handler</dt><dd>Обработка incoming/outgoing live migrations</dd>
+              <dt>Heartbeat</dt><dd>Периодический heartbeat к control plane (конфигурируемый интервал)</dd>
+            </dl>
+            <blockquote>
+              <strong>Autonomous:</strong> При отказе всех control plane сервисов существующие VM продолжают работать, агенты управляют local lifecycle.
+            </blockquote>
+          </div>
+        </div>
+
+        <div class="footer">
+          <span><a href="architecture.html">← Архитектура</a></span>
+          <span><a href="api.html">API Docs →</a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <aside class="toc">
+    <div class="toc-title">Содержание</div>
+    <ul class="toc-list">
+      <li><a href="#api">API Gateway</a></li>
+      <li><a href="#compute">Compute</a></li>
+      <li><a href="#storage">Storage</a></li>
+      <li><a href="#network">Network</a></li>
+      <li><a href="#image">Image</a></li>
+      <li><a href="#billing">Billing</a></li>
+      <li><a href="#backup">Backup</a></li>
+      <li><a href="#ai">AI</a></li>
+      <li><a href="#agent">Agent</a></li>
+    </ul>
+  </aside>
+</main>
+<script src="js/main.js"></script>
+</body>
+</html>
