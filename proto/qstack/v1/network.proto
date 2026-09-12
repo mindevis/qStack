@@ -1,0 +1,100 @@
+syntax = "proto3";
+
+package qstack.v1;
+
+option go_package = "github.com/mindevis/qstack/pkg/grpc/proto/qstack/v1";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+// --- Network Service ---
+
+service NetworkService {
+	rpc CreateNetwork(CreateNetworkRequest) returns (CreateNetworkResponse);
+	rpc GetNetwork(GetNetworkRequest) returns (GetNetworkResponse);
+	rpc ListNetworks(ListNetworksRequest) returns (ListNetworksResponse);
+	rpc DeleteNetwork(DeleteNetworkRequest) returns (google.protobuf.Empty);
+	rpc AttachVM(AttachVMRequest) returns (google.protobuf.Empty);
+	rpc DetachVM(DetachVMRequest) returns (google.protobuf.Empty);
+	rpc AllocateIP(AllocateIPRequest) returns (AllocateIPResponse);
+	rpc ReleaseIP(ReleaseIPRequest) returns (google.protobuf.Empty);
+	rpc ReserveIP(ReserveIPRequest) returns (ReserveIPResponse);
+}
+
+message Network {
+	string id = 1;
+	string name = 2;
+	string tenant_id = 3;
+	string cidr = 4;
+	string gateway = 5;
+	string backend = 6; // libvirt, macvlan
+	int32 vlan = 7;
+	int32 mtu = 8;
+	google.protobuf.Timestamp created_at = 9;
+}
+
+message CreateNetworkRequest {
+	string name = 1;
+	string tenant_id = 2;
+	string cidr = 3;
+	string gateway = 4;
+	string backend = 5;
+	int32 vlan = 6;
+}
+
+message CreateNetworkResponse { Network network = 1; }
+message GetNetworkRequest { string id = 1; }
+message GetNetworkResponse { Network network = 1; }
+
+message ListNetworksRequest { string tenant_id = 1; }
+message ListNetworksResponse {
+	repeated Network networks = 1;
+	int32 total = 2;
+}
+
+message DeleteNetworkRequest { string id = 1; }
+message AttachVMRequest {
+	string network_id = 1;
+	string vm_id = 2;
+}
+message DetachVMRequest {
+	string network_id = 1;
+	string vm_id = 2;
+}
+
+message AllocateIPRequest {
+	string network_id = 1;
+	string vm_id = 2;
+	string mac = 3;
+}
+
+message AllocateIPResponse {
+	string ip = 1;
+	int32 lease_seconds = 2;
+}
+
+message ReleaseIPRequest {
+	string network_id = 1;
+	string ip = 2;
+}
+
+message ReserveIPResponse {
+	string ip = 1;
+}
+
+message ReserveIPRequest {
+	string network_id = 1;
+	string ip = 2;
+	string mac = 3;
+	string description = 4;
+}
+
+// --- IPAM ---
+
+message IPAllocation {
+	string ip = 1;
+	string mac = 2;
+	string vm_id = 3;
+	int32 lease_seconds = 4;
+	google.protobuf.Timestamp created_at = 5;
+}

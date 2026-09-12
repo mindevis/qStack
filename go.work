@@ -1,0 +1,13 @@
+go 1.24
+
+use (
+	.
+	./cmd/qstack-api
+	./cmd/qstack-storage
+	./cmd/qstack-network
+	./cmd/qstack-image
+	./cmd/qstack-billing
+	./cmd/qstack-backup
+	./cmd/qstack-ai
+	./cmd/qstack-agent
+)

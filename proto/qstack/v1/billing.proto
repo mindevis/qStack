@@ -1,0 +1,117 @@
+syntax = "proto3";
+
+package qstack.v1;
+
+option go_package = "github.com/mindevis/qstack/pkg/grpc/proto/qstack/v1";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+// --- Billing Service ---
+
+service BillingService {
+	rpc CreateTenant(CreateTenantRequest) returns (CreateTenantResponse);
+	rpc GetTenant(GetTenantRequest) returns (GetTenantResponse);
+	rpc ListTenants(ListTenantsRequest) returns (ListTenantsResponse);
+	rpc UpdateTenant(UpdateTenantRequest) returns (UpdateTenantResponse);
+	rpc GetUsage(GetUsageRequest) returns (GetUsageResponse);
+	rpc GetInvoice(GetInvoiceRequest) returns (GetInvoiceResponse);
+	rpc ListInvoices(ListInvoicesRequest) returns (ListInvoicesResponse);
+	rpc CheckQuota(CheckQuotaRequest) returns (CheckQuotaResponse);
+}
+
+message Tenant {
+	string id = 1;
+	string name = 2;
+	string plan = 3; // free, standard, premium, enterprise
+	bool active = 4;
+	Quota quota = 5;
+	Usage usage = 6;
+	google.protobuf.Timestamp created_at = 7;
+}
+
+message CreateTenantRequest {
+	string name = 1;
+	string plan = 2;
+}
+
+message CreateTenantResponse { Tenant tenant = 1; }
+message GetTenantRequest { string id = 1; }
+message GetTenantResponse { Tenant tenant = 1; }
+
+message ListTenantsRequest {
+	bool active_only = 1;
+	string plan = 2;
+}
+
+message ListTenantsResponse {
+	repeated Tenant tenants = 1;
+	int32 total = 2;
+}
+
+message UpdateTenantRequest {
+	string id = 1;
+	string plan = 2;
+	bool active = 3;
+	Quota quota = 4;
+}
+
+message UpdateTenantResponse { Tenant tenant = 1; }
+
+message Quota {
+	int32 max_vms = 1;
+	int32 max_cpu = 2;
+	int32 max_memory_mb = 3;
+	int32 max_storage_gb = 4;
+	int32 max_networks = 5;
+	int32 max_images = 6;
+}
+
+message Usage {
+	int32 active_vms = 1;
+	int32 cpu_used = 2;
+	int32 memory_used_mb = 3;
+	int32 storage_used_gb = 4;
+	google.protobuf.Timestamp updated_at = 5;
+}
+
+message GetUsageRequest { string tenant_id = 1; }
+message GetUsageResponse { Usage usage = 1; }
+
+message Invoice {
+	string id = 1;
+	string tenant_id = 2;
+	double amount = 3;
+	string currency = 4;
+	string status = 5; // pending, paid, overdue
+	google.protobuf.Timestamp due_date = 6;
+	google.protobuf.Timestamp created_at = 7;
+	repeated InvoiceLine lines = 8;
+}
+
+message InvoiceLine {
+	string description = 1;
+	double amount = 2;
+	int32 quantity = 3;
+}
+
+message GetInvoiceRequest { string id = 1; }
+message GetInvoiceResponse { Invoice invoice = 1; }
+
+message ListInvoicesRequest { string tenant_id = 1; }
+message ListInvoicesResponse { repeated Invoice invoices = 1; }
+
+message CheckQuotaRequest {
+	string tenant_id = 1;
+	int32 requested_vms = 2;
+	int32 requested_cpu = 3;
+	int32 requested_memory_mb = 4;
+	int32 requested_storage_gb = 5;
+}
+
+message CheckQuotaResponse {
+	bool allowed = 1;
+	string reason = 2;
+	Usage current_usage = 3;
+	Quota limits = 4;
+}

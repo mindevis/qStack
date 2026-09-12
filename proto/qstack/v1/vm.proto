@@ -1,0 +1,177 @@
+syntax = "proto3";
+
+package qstack.v1;
+
+option go_package = "github.com/mindevis/qstack/pkg/grpc/proto/qstack/v1";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+// --- VM Service ---
+
+service VMService {
+	rpc CreateVM(CreateVMRequest) returns (CreateVMResponse);
+	rpc GetVM(GetVMRequest) returns (GetVMResponse);
+	rpc ListVMs(ListVMsRequest) returns (ListVMsResponse);
+	rpc UpdateVM(UpdateVMRequest) returns (UpdateVMResponse);
+	rpc DeleteVM(DeleteVMRequest) returns (google.protobuf.Empty);
+	rpc StartVM(StartVMRequest) returns (google.protobuf.Empty);
+	rpc StopVM(StopVMRequest) returns (google.protobuf.Empty);
+	rpc RebootVM(RebootVMRequest) returns (google.protobuf.Empty);
+	rpc MigrateVM(MigrateVMRequest) returns (MigrateVMResponse);
+	rpc GetVMEvents(GetVMEventsRequest) returns (GetVMEventsResponse);
+}
+
+message VM {
+	string id = 1;
+	string name = 2;
+	string tenant_id = 3;
+	string cluster_id = 4;
+	string host_id = 5;
+	string state = 6;
+	int32 cpu = 7;
+	int32 memory_mb = 8;
+	int32 disk_size_gb = 9;
+	string image_id = 10;
+	repeated string network_ids = 11;
+	repeated string volume_ids = 12;
+	map<string, string> tags = 13;
+	google.protobuf.Timestamp created_at = 14;
+	google.protobuf.Timestamp updated_at = 15;
+	repeated string ips = 16;
+	string desired_state = 17;
+}
+
+message CreateVMRequest {
+	string name = 1;
+	string tenant_id = 2;
+	string cluster_id = 3;
+	int32 cpu = 4;
+	int32 memory_mb = 5;
+	int32 disk_size_gb = 6;
+	string image_id = 7;
+	repeated string network_ids = 8;
+	map<string, string> tags = 9;
+}
+
+message CreateVMResponse { VM vm = 1; }
+
+message GetVMRequest { string id = 1; }
+message GetVMResponse { VM vm = 1; }
+
+message ListVMsRequest {
+	string tenant_id = 1;
+	string cluster_id = 2;
+	string state = 3;
+	int32 page = 4;
+	int32 page_size = 5;
+}
+
+message ListVMsResponse {
+	repeated VM vms = 1;
+	int32 total = 2;
+}
+
+message UpdateVMRequest {
+	string id = 1;
+	int32 cpu = 2;
+	int32 memory_mb = 3;
+	int32 disk_size_gb = 4;
+	map<string, string> tags = 5;
+}
+
+message UpdateVMResponse { VM vm = 1; }
+
+message DeleteVMRequest { string id = 1; }
+message StartVMRequest { string id = 1; }
+message StopVMRequest { string id = 1; }
+message RebootVMRequest { string id = 1; }
+
+message MigrateVMRequest {
+	string id = 1;
+	string target_host_id = 2;
+	bool live = 3;
+}
+
+message MigrateVMResponse {
+	string vm_id = 1;
+	string state = 2;
+	string target_host_id = 3;
+}
+
+message GetVMEventsRequest { string id = 1; }
+message GetVMEventsResponse {
+	repeated VMEvent events = 1;
+}
+
+message VMEvent {
+	google.protobuf.Timestamp timestamp = 1;
+	string type = 2;
+	string message = 3;
+	string actor = 4;
+}
+
+// --- Host Service ---
+
+service HostService {
+	rpc GetHost(GetHostRequest) returns (GetHostResponse);
+	rpc ListHosts(ListHostsRequest) returns (ListHostsResponse);
+	rpc UpdateHost(UpdateHostRequest) returns (UpdateHostResponse);
+	rpc RegisterHost(RegisterHostRequest) returns (RegisterHostResponse);
+	rpc Heartbeat(HeartbeatRequest) returns (google.protobuf.Empty);
+}
+
+message Host {
+	string id = 1;
+	string name = 2;
+	string cluster_id = 3;
+	string address = 4;
+	string state = 5;
+	int32 cpu_total = 6;
+	int32 cpu_used = 7;
+	int32 memory_total_mb = 8;
+	int32 memory_used_mb = 9;
+	int32 disk_total_gb = 10;
+	int32 disk_used_gb = 11;
+	int32 vm_count = 12;
+	google.protobuf.Timestamp last_heartbeat = 13;
+	map<string, string> tags = 14;
+}
+
+message GetHostRequest { string id = 1; }
+message GetHostResponse { Host host = 1; }
+
+message ListHostsRequest {
+	string cluster_id = 1;
+	string state = 2;
+}
+
+message ListHostsResponse {
+	repeated Host hosts = 1;
+	int32 total = 2;
+}
+
+message UpdateHostRequest {
+	string id = 1;
+	string state = 2;
+	map<string, string> tags = 3;
+}
+
+message UpdateHostResponse { Host host = 1; }
+
+message RegisterHostRequest {
+	string name = 1;
+	string cluster_id = 2;
+	string address = 3;
+	string token = 4;
+	map<string, string> tags = 5;
+}
+
+message RegisterHostResponse { Host host = 1; }
+
+message HeartbeatRequest {
+	string id = 1;
+	int32 cpu_used = 2;
+	int32 memory_used_mb = 3;
+	int32 disk_used_gb = 4;
+}
