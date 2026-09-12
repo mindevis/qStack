@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package qstack.v1;
+
+option go_package = "github.com/mindevis/qstack/pkg/grpc/proto/qstack/v1";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+// --- Agent Service (bidirectional stream) ---
+
+service AgentService {
+	rpc Connect(stream AgentMessage) returns (stream AgentMessage);
+	rpc GetAgentStatus(GetAgentStatusRequest) returns (GetAgentStatusResponse);
+	rpc ExecuteCommand(ExecuteCommandRequest) returns (ExecuteCommandResponse);
+}
+
+message AgentMessage {
+	oneof payload {
+		Heartbeat heartbeat = 1;
+		Task task = 2;
+		TaskResult task_result = 3;
+		AgentInfo agent_info = 4;
+		AgentUpdate agent_update = 5;
+	}
+}
+
+message Heartbeat {
+	string agent_id = 1;
+	google.protobuf.Timestamp timestamp = 2;
+	AgentResources resources = 3;
+	int32 vm_count = 4;
+}
+
+message AgentResources {
+	int32 cpu_total = 1;
+	int32 cpu_used = 2;
+	int32 memory_total_mb = 3;
+	int32 memory_used_mb = 4;
+	int32 disk_total_gb = 5;
+	int32 disk_used_gb = 6;
+}
+
+message Task {
+	string id = 1;
+	string type = 2; // create_vm, delete_vm, migrate, snapshot, etc.
+	map<string, string> params = 3;
+	google.protobuf.Timestamp deadline = 4;
+}
+
+message TaskResult {
+	string task_id = 1;
+	bool success = 2;
+	string output = 3;
+	string error = 4;
+	google.protobuf.Timestamp completed_at = 5;
+}
+
+message AgentInfo {
+	string agent_id = 1;
+	string name = 2;
+	string version = 3;
+	string os = 4;
+	string architecture = 5;
+	AgentResources resources = 6;
+}
+
+message AgentUpdate {
+	string agent_id = 1;
+	string version = 2;
+}
+
+message GetAgentStatusRequest { string agent_id = 1; }
+message GetAgentStatusResponse {
+	AgentInfo info = 1;
+	bool connected = 2;
+	google.protobuf.Timestamp last_seen = 3;
+}
+
+message ExecuteCommandRequest {
+	string agent_id = 1;
+	string command = 2;
+	int32 timeout_seconds = 3;
+}
+
+message ExecuteCommandResponse {
+	string output = 1;
+	string error = 2;
+	int32 exit_code = 3;
+}

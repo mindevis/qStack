@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+package qstack.v1;
+
+option go_package = "github.com/mindevis/qstack/pkg/grpc/proto/qstack/v1";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+// --- Storage Service ---
+
+service StorageService {
+	rpc CreateVolume(CreateVolumeRequest) returns (CreateVolumeResponse);
+	rpc GetVolume(GetVolumeRequest) returns (GetVolumeResponse);
+	rpc ListVolumes(ListVolumesRequest) returns (ListVolumesResponse);
+	rpc DeleteVolume(DeleteVolumeRequest) returns (google.protobuf.Empty);
+	rpc AttachVolume(AttachVolumeRequest) returns (google.protobuf.Empty);
+	rpc DetachVolume(DetachVolumeRequest) returns (google.protobuf.Empty);
+	rpc CreateSnapshot(CreateSnapshotRequest) returns (CreateSnapshotResponse);
+	rpc RestoreSnapshot(RestoreSnapshotRequest) returns (google.protobuf.Empty);
+	rpc ListPools(ListPoolsRequest) returns (ListPoolsResponse);
+}
+
+message Volume {
+	string id = 1;
+	string name = 2;
+	string tenant_id = 3;
+	int32 size_gb = 4;
+	string pool_id = 5;
+	string backend = 6; // libvirt, ceph-rbd, iscsi, local
+	string state = 7;
+	string attached_to_vm = 8;
+	google.protobuf.Timestamp created_at = 9;
+}
+
+message CreateVolumeRequest {
+	string name = 1;
+	string tenant_id = 2;
+	int32 size_gb = 3;
+	string pool_id = 4;
+	string backend = 5;
+}
+
+message CreateVolumeResponse { Volume volume = 1; }
+message GetVolumeRequest { string id = 1; }
+message GetVolumeResponse { Volume volume = 1; }
+
+message ListVolumesRequest {
+	string tenant_id = 1;
+	string pool_id = 2;
+}
+
+message ListVolumesResponse {
+	repeated Volume volumes = 1;
+	int32 total = 2;
+}
+
+message DeleteVolumeRequest { string id = 1; }
+message AttachVolumeRequest {
+	string volume_id = 1;
+	string vm_id = 2;
+}
+message DetachVolumeRequest {
+	string volume_id = 1;
+}
+
+message Snapshot {
+	string id = 1;
+	string name = 2;
+	string volume_id = 3;
+	google.protobuf.Timestamp created_at = 4;
+	string state = 5;
+}
+
+message CreateSnapshotRequest {
+	string volume_id = 1;
+	string name = 2;
+}
+
+message CreateSnapshotResponse { Snapshot snapshot = 1; }
+message RestoreSnapshotRequest { string snapshot_id = 1; }
+
+message Pool {
+	string id = 1;
+	string name = 2;
+	string backend = 3;
+	int32 total_gb = 4;
+	int32 used_gb = 5;
+}
+
+message ListPoolsRequest { string backend = 1; }
+message ListPoolsResponse { repeated Pool pools = 1; }

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>qStack — Документация</title>
+<meta name="description" content="qStack — распределённый оркестратор облачных виртуальных машин. Полная документация по архитектуре, сервисам, API и развёртыванию.">
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<header class="header">
+  <button class="menu-toggle" aria-label="Меню">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+  </button>
+  <a href="index.html" class="header-logo">
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    <span>qStack Docs</span>
+  </a>
+  <div class="header-center">
+    <div class="header-search">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input id="search-input" type="text" placeholder="Поиск по документации…" autocomplete="off">
+      <span class="search-shortcut">⌘K</span>
+      <div id="search-results" class="search-results"></div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="header-btn" id="lang-toggle" title="Переключить язык">EN</button>
+    <button class="header-btn" id="theme-toggle" title="Переключить тему">
+      <span class="theme-icon">🌙</span>
+    </button>
+    <a href="https://github.com/mindever/qStack" class="header-btn" target="_blank" rel="noopener">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 016.02 0c2.3-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.82.58A12.01 12.01 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+    </a>
+  </div>
+</header>
+
+<div class="sidebar-overlay"></div>
+<nav class="sidebar">
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">Обзор</div>
+    <a href="index.html" class="sidebar-link">Введение</a>
+    <a href="architecture.html" class="sidebar-link">Архитектура</a>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">Сервисы</div>
+    <a href="services.html#api" class="sidebar-link">API Gateway</a>
+    <a href="services.html#compute" class="sidebar-link">Compute</a>
+    <a href="services.html#storage" class="sidebar-link">Storage</a>
+    <a href="services.html#network" class="sidebar-link">Network</a>
+    <a href="services.html#image" class="sidebar-link">Image</a>
+    <a href="services.html#billing" class="sidebar-link">Billing</a>
+    <a href="services.html#backup" class="sidebar-link">Backup</a>
+    <a href="services.html#ai" class="sidebar-link">AI</a>
+    <a href="services.html#agent" class="sidebar-link">Agent</a>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">API</div>
+    <a href="api.html" class="sidebar-link">REST API</a>
+    <a href="api.html#grpc" class="sidebar-link">gRPC</a>
+    <a href="api.html#auth" class="sidebar-link">Авторизация</a>
+    <a href="api.html#rate-limiting" class="sidebar-link">Rate Limiting</a>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">Развёртывание</div>
+    <a href="deployment.html" class="sidebar-link">Kubernetes</a>
+    <a href="deployment.html#docker-compose" class="sidebar-link">Docker Compose</a>
+    <a href="deployment.html#ci-cd" class="sidebar-link">CI/CD</a>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">Разработка</div>
+    <a href="development.html" class="sidebar-link">Настройка окружения</a>
+    <a href="development.html#testing" class="sidebar-link">Тестирование</a>
+    <a href="development.html#debug" class="sidebar-link">Debug Mode</a>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">Участие</div>
+    <a href="contributing.html" class="sidebar-link">Contributing</a>
+    <a href="changelog.html" class="sidebar-link">Changelog</a>
+  </div>
+</nav>
+
+<main class="layout">
+  <div class="main">
+    <div class="main-inner">
+      <div class="content">
+        <div class="hero">
+          <h1>qStack</h1>
+          <p>Распределённый оркестратор облачных виртуальных машин с декларативным подходом к reconciling (desired/actual state). Полная микросервисная архитектура.</p>
+          <div class="hero-actions">
+            <a href="architecture.html" class="btn btn-primary">Архитектура →</a>
+            <a href="services.html" class="btn btn-outline">Сервисы</a>
+            <a href="api.html" class="btn btn-outline">API Docs</a>
+          </div>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat"><div class="stat-number">9</div><div class="stat-label">Сервисов</div></div>
+          <div class="stat"><div class="stat-number">7</div><div class="stat-label">DB Схем</div></div>
+          <div class="stat"><div class="stat-number">Go</div><div class="stat-label">Язык</div></div>
+          <div class="stat"><div class="stat-number">K8s</div><div class="stat-label">Оркестрация</div></div>
+        </div>
+
+        <h2 id="tech-stack">Технологический стек</h2>
+        <div class="table-wrapper">
+<table>
+<thead><tr><th>Компонент</th><th>Выбор</th><th>Обоснование</th></tr></thead>
+<tbody>
+<tr><td><b>Язык</b></td><td>Go</td><td>Производительность, конкурентность, стандарт для облачного tooling</td></tr>
+<tr><td><b>Hypervisor</b></td><td>libvirt → libvirt-go</td><td>KVM/QEMU, локальная виртуализация</td></tr>
+<tr><td><b>API Gateway</b></td><td><code>gin</code></td><td>Быстрый, feature-rich, встроенный роутинг, разделение Admin/User</td></tr>
+<tr><td><b>Service-to-Service</b></td><td>gRPC + protobuf</td><td>Синхронный RPC, генерируемые клиенты, mTLS</td></tr>
+<tr><td><b>Event Bus</b></td><td>NATS + NKey</td><td>Асинхронные события, publish/subscribe, TLS 1.3</td></tr>
+<tr><td><b>CLI</b></td><td>cobra</td><td>Стандарт для Go CLI инструментов</td></tr>
+<tr><td><b>База данных</b></td><td>PostgreSQL + sqlc</td><td>Type-safe SQL, схемы на каждый сервис</td></tr>
+<tr><td><b>State Pattern</b></td><td>Desired/Actual reconciliation</td><td>Декларативный (как Terraform/K8s)</td></tr>
+<tr><td><b>Dashboard</b></td><td>React + TypeScript + Ant Design + Vite</td><td>Управление VM, self-service (PCI-DSS)</td></tr>
+<tr><td><b>Конфигурация</b></td><td>YAML манифесты</td><td>Читаемость, стиль Kubernetes</td></tr>
+<tr><td><b>Логи</b></td><td>slog (stdlib) + OpenTelemetry</td><td>Структурированные JSON логи, распределённый трейсинг</td></tr>
+<tr><td><b>Отслеживание ошибок</b></td><td>GlitchTip (self-hosted Sentry)</td><td>Stack traces, группировка ошибок, трекинг релизов</td></tr>
+<tr><td><b>Оркестрация</b></td><td>Kubernetes</td><td>Целевая платформа развёртывания control plane</td></tr>
+<tr><td><b>Leader Election</b></td><td>PostgreSQL advisory locks → etcd</td><td>HA compute service</td></tr>
+<tr><td><b>Distributed TX</b></td><td>Sagas (orchestration)</td><td>Мульти-сервисные транзакции (создание VM)</td></tr>
+<tr><td><b>Secrets</b></td><td>OpenBao / HashiCorp Vault</td><td>AES-256-GCM, audit trail, динамические секреты</td></tr>
+</tbody>
+</table>
+        </div>
+
+        <h2 id="quick-start">Быстрый старт</h2>
+        <div class="code-header">Bash</div>
+<pre><code># Один комманд для запуска всей инфраструктуры
+make dev-up    # docker-compose: PG, NATS, CA, все сервисы (hot reload)
+make dev-test  # запуск тестов (unit + integration)
+make dev-lint  # golangci-lint + proto lint
+make dev-down  # остановка</code></pre>
+
+        <h2 id="sections">Разделы документации</h2>
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-icon">🏗️</div>
+            <h3><a href="architecture.html">Архитектура</a></h3>
+            <p>Микросервисная архитектура, monorepo layout, service boundaries, диаграмма коммуникации, DB схемы, PCI-DSS разделение</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">⚙️</div>
+            <h3><a href="services.html">Сервисы</a></h3>
+            <p>Описание всех 9 сервисов: API Gateway, Compute, Storage, Network, Image, Billing, Backup, AI, Agent</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🔌</div>
+            <h3><a href="api.html">API Documentation</a></h3>
+            <p>REST endpoints, gRPC сервисы, авторизация (JWT, OAuth2, API Keys), rate limiting, версионирование</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🚀</div>
+            <h3><a href="deployment.html">Развёртывание</a></h3>
+            <p>Kubernetes deployment, Docker Compose, K8s манифесты, CI/CD pipeline (GitHub Actions → kind → k3d)</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">💻</div>
+            <h3><a href="development.html">Разработка</a></h3>
+            <p>Настройка dev окружения, prerequisites, workspace, hot reload, тестирование, linting, debug mode</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🤝</div>
+            <h3><a href="contributing.html">Contributing</a></h3>
+            <p>Code style, conventional commits, PR процесс, branch naming, требования к тестам</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">📋</div>
+            <h3><a href="changelog.html">Changelog</a></h3>
+            <p>История версий, изменения по фазам реализации проекта</p>
+          </div>
+        </div>
+
+        <h2 id="key-features">Ключевые особенности</h2>
+        <ul>
+          <li><strong>Autonomous Hypervisors</strong> — каждый хост запускает <code>qstack-agent</code> с local libvirt. При отказе control plane VM продолжают работать</li>
+          <li><strong>Service Independence</strong> — каждый сервис — независимый процесс со своей DB схемой и деплоем</li>
+          <li><strong>Live Migration</strong> — при сбое гипервизора VM мигрируются на здоровые хосты (zero downtime)</li>
+          <li><strong>Database Isolation</strong> — каждый сервис владеет своей PostgreSQL схемой</li>
+          <li><strong>Saga-based Transactions</strong> — мульти-сервисные операции через Sagas с компенсирующими действиями</li>
+          <li><strong>PCI-DSS Compliance</strong> — строгое разделение Admin и User Dashboard</li>
+          <li><strong>Multi-Tenancy</strong> — tenant isolation через RLS, quota enforcement, RBAC</li>
+          <li><strong>AI-Assisted Operations</strong> — Advisor, Predictor, AutoHeal, Assistant chat</li>
+        </ul>
+
+        <div class="footer">
+          <span>qStack © 2026</span>
+          <span>Документация</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aside class="toc">
+    <div class="toc-title">Содержание</div>
+    <ul class="toc-list">
+      <li><a href="#tech-stack">Технологический стек</a></li>
+      <li><a href="#quick-start">Быстрый старт</a></li>
+      <li><a href="#sections">Разделы документации</a></li>
+      <li><a href="#key-features">Ключевые особенности</a></li>
+    </ul>
+  </aside>
+</main>
+
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package qstack.v1;
+
+option go_package = "github.com/mindevis/qstack/pkg/grpc/proto/qstack/v1";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+// --- Image Service ---
+
+service ImageService {
+	rpc CreateImage(CreateImageRequest) returns (CreateImageResponse);
+	rpc GetImage(GetImageRequest) returns (GetImageResponse);
+	rpc ListImages(ListImagesRequest) returns (ListImagesResponse);
+	rpc DeleteImage(DeleteImageRequest) returns (google.protobuf.Empty);
+	rpc BuildImage(BuildImageRequest) returns (BuildImageResponse);
+	rpc GetBuildStatus(BuildStatusRequest) returns (BuildStatusResponse);
+	rpc ConvertImage(ConvertImageRequest) returns (ConvertImageResponse);
+}
+
+message Image {
+	string id = 1;
+	string name = 2;
+	string tenant_id = 3;
+	int32 size_gb = 4;
+	string format = 5; // qcow2, raw, vmdk, vhd
+	string backend = 6; // local, ceph-rbd, s3
+	string state = 7;
+	string os = 8;
+	string arch = 9;
+	string checksum = 10; // SHA-256
+	string visibility = 11; // public, private, shared
+	repeated string tags = 12;
+	google.protobuf.Timestamp created_at = 13;
+}
+
+message CreateImageRequest {
+	string name = 1;
+	string tenant_id = 2;
+	string source_url = 3;
+	string format = 4;
+	string backend = 5;
+	string os = 6;
+	string arch = 7;
+}
+
+message CreateImageResponse { Image image = 1; }
+message GetImageRequest { string id = 1; }
+message GetImageResponse { Image image = 1; }
+
+message ListImagesRequest {
+	string tenant_id = 1;
+	string visibility = 2;
+	string os = 3;
+}
+
+message ListImagesResponse {
+	repeated Image images = 1;
+	int32 total = 2;
+}
+
+message DeleteImageRequest { string id = 1; }
+
+message BuildImageRequest {
+	string name = 1;
+	string tenant_id = 2;
+	string template = 3; // cloud-init, kickstart, preseed
+	map<string, string> config = 4;
+}
+
+message BuildImageResponse {
+	string build_id = 1;
+	string image_id = 2;
+}
+
+message BuildStatusRequest { string build_id = 1; }
+
+message BuildStatusResponse {
+	string build_id = 1;
+	string state = 2;
+	string image_id = 3;
+	string progress = 4; // 0-100
+	string error = 5;
+}
+
+message ConvertImageRequest {
+	string image_id = 1;
+	string target_format = 2;
+}
+
+message ConvertImageResponse {
+	string build_id = 1;
+}

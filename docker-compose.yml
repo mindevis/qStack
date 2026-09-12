@@ -1,0 +1,96 @@
+version: "3.8"
+
+# Infrastructure services for qStack development
+services:
+  # PostgreSQL
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD: qstack-dev
+      POSTGRES_MULTIPLE_DATABASES: qstack_api,qstack_storage,qstack_network,qstack_image,qstack_billing,qstack_backup,qstack_ai
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init.sh:/docker-entrypoint-initdb.d/init.sh
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # NATS
+  nats:
+    image: nats:2.10-alpine
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command:
+      - "-js"
+      - "-store_dir=/data"
+    volumes:
+      - nats_data:/data
+
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+
+  # Grafana
+  grafana:
+    image: grafana/grafana:10.4.0
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+  # Loki (logging)
+  loki:
+    image: grafana/loki:3.0.0
+    ports:
+      - "3100:3100"
+    volumes:
+      - loki_data:/loki
+
+  # GlitchTip (self-hosted Sentry)
+  glitchtip_db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: glitchtip
+      POSTGRES_PASSWORD: glitchtip
+      POSTGRES_DB: glitchtip
+    volumes:
+      - glitchtip_db_data:/var/lib/postgresql/data
+
+  glitchtip_cache:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  glitchtip:
+    image: glitchtip/glitchtip:v2.7.0
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgres://glitchtip:glitchtip@glitchtip_db/glitchtip
+      REDIS_URL: redis://glitchtip_cache:6379/0
+      EMAIL_URL: consolemail://
+    depends_on:
+      - glitchtip_db
+      - glitchtip_cache
+
+volumes:
+  postgres_data:
+  nats_data:
+  prometheus_data:
+  grafana_data:
+  loki_data:
+  glitchtip_db_data:

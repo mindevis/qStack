@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Архитектура — qStack Docs</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<header class="header">
+  <button class="menu-toggle" aria-label="Меню"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+  <a href="index.html" class="header-logo"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>qStack Docs</span></a>
+  <div class="header-center"><div class="header-search"><svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="search-input" type="text" placeholder="Поиск по документации…" autocomplete="off"><span class="search-shortcut">⌘K</span><div id="search-results" class="search-results"></div></div></div>
+  <div class="header-right"><button class="header-btn" id="lang-toggle" title="Переключить язык">EN</button><button class="header-btn" id="theme-toggle" title="Переключить тему"><span class="theme-icon">🌙</span></button><a href="https://github.com/mindever/qStack" class="header-btn" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 016.02 0c2.3-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.82.58A12.01 12.01 0 0024 12c0-6.63-5.37-12-12-12z"/></svg></a></div>
+</header>
+<div class="sidebar-overlay"></div>
+<nav class="sidebar">
+  <div class="sidebar-group"><div class="sidebar-group-title">Обзор</div><a href="index.html" class="sidebar-link">Введение</a><a href="architecture.html" class="sidebar-link active">Архитектура</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">Сервисы</div><a href="services.html#api" class="sidebar-link">API Gateway</a><a href="services.html#compute" class="sidebar-link">Compute</a><a href="services.html#storage" class="sidebar-link">Storage</a><a href="services.html#network" class="sidebar-link">Network</a><a href="services.html#image" class="sidebar-link">Image</a><a href="services.html#billing" class="sidebar-link">Billing</a><a href="services.html#backup" class="sidebar-link">Backup</a><a href="services.html#ai" class="sidebar-link">AI</a><a href="services.html#agent" class="sidebar-link">Agent</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">API</div><a href="api.html" class="sidebar-link">REST API</a><a href="api.html#grpc" class="sidebar-link">gRPC</a><a href="api.html#auth" class="sidebar-link">Авторизация</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">Развёртывание</div><a href="deployment.html" class="sidebar-link">Kubernetes</a><a href="deployment.html#docker-compose" class="sidebar-link">Docker Compose</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">Разработка</div><a href="development.html" class="sidebar-link">Настройка окружения</a><a href="development.html#testing" class="sidebar-link">Тестирование</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">Участие</div><a href="contributing.html" class="sidebar-link">Contributing</a><a href="changelog.html" class="sidebar-link">Changelog</a></div>
+</nav>
+<main class="layout">
+  <div class="main">
+    <div class="main-inner">
+      <div class="content">
+        <h1>Архитектура qStack</h1>
+        <p>Распределённая система с полной микросервисной архитектурой. Каждый компонент — независимый сервис со своим <code>go.mod</code>, бинарником, схемой базы данных и развёртыванием.</p>
+
+        <h2 id="monorepo">Monorepo Layout</h2>
+        <div class="code-header">qStack/</div>
+<pre><code>qStack/
+├── pkg/                       # Shared SDK (types, gRPC protos, helpers)
+│   ├── types/                 # Shared domain types
+│   ├── grpc/                  # gRPC service definitions + generated code
+│   ├── nats/                  # NATS helpers (connect, publish, subscribe)
+│   ├── ca/                    # Internal PKI (cert signing, rotation)
+│   └── config/                # Shared config types
+├── services/                  # Microservices (each has own go.mod)
+│   ├── api/                   # qstack-api (Gateway, Auth, Dashboard)
+│   ├── compute/               # qstack-compute (VMs, Hosts, Scheduler, HA)
+│   ├── storage/               # qstack-storage (Pools, Volumes, Snapshots)
+│   ├── network/               # qstack-network (Networks, IPAM, DHCP)
+│   ├── image/                 # qstack-image (Images, Builds, Cache)
+│   ├── billing/               # qstack-billing (Meter, Invoice, Quota)
+│   ├── backup/                # qstack-backup (Backup, Restore, Verify)
+│   └── ai/                    # qstack-ai (Advisor, Predictor, AutoHeal)
+├── agent/                     # qstack-agent (Hypervisor agent)
+├── dashboards/                # Web UIs (strictly separated, PCI-DSS)
+│   ├── admin/                 # qstack-admin (operator)
+│   └── user/                  # qstack-user (tenant)
+├── configs/                   # YAML examples
+├── docker-compose.yml         # Local dev (all services + infra)
+├── k8s/                       # Kubernetes manifests
+│   ├── common/                # namespace, postgres, nats, cert-manager, glitchtip
+│   └── {api,compute,storage,...}/
+├── go.work                    # Monorepo workspace
+├── Makefile
+└── proto/                     # Protobuf definitions (shared)</code></pre>
+
+        <h2 id="principles">Принципы микросервисов</h2>
+        <ul>
+          <li><strong>Собственная кодовая база</strong> — каждый сервис имеет свой <code>go.mod</code>, <code>Dockerfile</code> и сборку</li>
+          <li><strong>Собственная DB схема</strong> — PostgreSQL schemas per service (<code>compute_schema</code>, <code>storage_schema</code>). Сервисы читают/пишут только свои таблицы</li>
+          <li><strong>Нет общего internal кода</strong> — общий код в <code>pkg/</code> (SDK). Domain types через gRPC protos</li>
+          <li><strong>gRPC для синхронных вызовов</strong> — service-to-service через генерируемые gRPC клиенты (mTLS)</li>
+          <li><strong>NATS для асинхронных</strong> — event-driven коммуникация через NATS (NKey + TLS)</li>
+          <li><strong>Sagas для транзакций</strong> — мульти-сервисные операции (создание VM) через Sagas</li>
+          <li><strong>Независимый деплой</strong> — deploy, scale, rollback каждого сервиса независимо</li>
+          <li><strong>API Gateway</strong> — единственный сервис с внешними REST endpoint. Все остальные экспонируют только gRPC</li>
+        </ul>
+
+        <h2 id="service-boundaries">Границы сервисов</h2>
+        <div class="table-wrapper">
+<table>
+<thead><tr><th>Сервис</th><th>Реплики</th><th>DB Schema</th><th>Ответственность</th></tr></thead>
+<tbody>
+<tr><td><strong>qstack-api</strong></td><td>3+ (stateless)</td><td>—</td><td>REST API Gateway, Auth (JWT), Admin + User Dashboard, валидация, Saga orchestration</td></tr>
+<tr><td><strong>qstack-compute</strong></td><td>1 active (leader)</td><td><code>compute_schema</code></td><td>VMs, Hosts, Clusters, Reconciler, Scheduler, Live Migration, HA</td></tr>
+<tr><td><strong>qstack-storage</strong></td><td>1</td><td><code>storage_schema</code></td><td>Pools, Volumes, Snapshots, Attach/Detach</td></tr>
+<tr><td><strong>qstack-network</strong></td><td>1</td><td><code>network_schema</code></td><td>Networks, IPAM, Subnets, DHCP, MAC</td></tr>
+<tr><td><strong>qstack-image</strong></td><td>1</td><td><code>image_schema</code></td><td>Image CRUD, Build/Convert tasks, Cache sync</td></tr>
+<tr><td><strong>qstack-billing</strong></td><td>1</td><td><code>billing_schema</code></td><td>Tenants, Rate Plans, Usage Meter, Invoices, Quota</td></tr>
+<tr><td><strong>qstack-backup</strong></td><td>1</td><td><code>backup_schema</code></td><td>Backup scheduling, Snapshots, Restore, Verify</td></tr>
+<tr><td><strong>qstack-ai</strong></td><td>1</td><td><code>ai_schema</code></td><td>Advisor, Predictor, AutoHeal, Assistant chat</td></tr>
+<tr><td><strong>qstack-agent</strong></td><td>N (per host)</td><td>—</td><td>Local libvirt management, heartbeat, resource reporting</td></tr>
+</tbody>
+</table>
+        </div>
+
+        <h2 id="communication">Диаграмма коммуникации</h2>
+        <div class="ascii-diagram">
+                    ┌─────────────────────────────────────────────────────────────────────────┐
+                    │                 Control Plane (K8s — Microservices)                    │
+                    │                                                                         │
+                    │  ┌─────────────────────────────────────────────────────────────────┐    │
+                    │  │                    qstack-api (3+ replicas, stateless)          │    │
+                    │  │     Gin Router · Auth · Dashboard · gRPC clients · Saga engine  │    │
+                    │  └──────────────────┬──────────────────┬────────────────────────────┘    │
+                    │                     │ gRPC (mTLS)      │ gRPC (mTLS)                    │
+                    │  ┌──────────────────┼──────────────────┼────────────────────────────┐   │
+                    │  │                  │                  │                            │   │
+                    │  │ ┌────────────────▼────────┐ ┌──────▼──────────────────────┐     │   │
+                    │  │ │ qstack-compute          │ │ qstack-storage              │     │   │
+                    │  │ │ (1 active leader)        │ │ (1 replica)                 │     │   │
+                    │  │ │ VMs · Hosts · Clusters  │ │ Pools · Volumes             │     │   │
+                    │  │ │ Reconciler              │ │ Snapshots · Attach/Detach   │     │   │
+                    │  │ │ Scheduler · Placement   │ │                             │     │   │
+                    │  │ │ Live Migration · HA     │ │                             │     │   │
+                    │  │ └─────────────────────────┘ └─────────────────────────────┘     │   │
+                    │  │                                                                 │   │
+                    │  │ ┌─────────────────────────┐ ┌───────────────────────────────┐   │   │
+                    │  │ │ qstack-network          │ │ qstack-image                  │   │   │
+                    │  │ │ (1 replica)             │ │ (1 replica)                   │   │   │
+                    │  │ │ Networks · IPAM · DHCP  │ │ Images · Builds · Convert     │   │   │
+                    │  │ │ Subnets · MAC           │ │ Cache sync to agents          │   │   │
+                    │  │ └─────────────────────────┘ └───────────────────────────────┘   │   │
+                    │  │                                                                 │   │
+                    │  │ ┌─────────────────────────┐ ┌───────────────────────────────┐   │   │
+                    │  │ │ qstack-billing          │ │ qstack-backup                 │   │   │
+                    │  │ │ (1 replica)             │ │ (1 replica)                   │   │   │
+                    │  │ │ Tenants · Meter · Plans │ │ Backup schedule · Restore     │   │   │
+                    │  │ │ Invoices · Quota        │ │ Verify · Retention            │   │   │
+                    │  │ └─────────────────────────┘ └───────────────────────────────┘   │   │
+                    │  │                                                                 │   │
+                    │  │ ┌─────────────────────────┐                                    │   │
+                    │  │ │ qstack-ai               │                                    │   │
+                    │  │ │ (1 replica)             │                                    │   │
+                    │  │ │ Advisor · Predictor     │                                    │   │
+                    │  │ │ AutoHeal · Assistant    │                                    │   │
+                    │  │ └─────────────────────────┘                                    │   │
+                    │  └────────────────────────────────────────────────────────────────┘   │
+                    │                                                                         │
+                    │  ┌───────────────────┐  ┌──────────────┐  ┌──────────┐  ┌──────────┐   │
+                    │  │ PostgreSQL (1x)   │  │ NATS (3x)    │  │ CA       │  │ OTEL     │   │
+                    │  │  (per-schema)     │  │ (events)     │  │ (mTLS)   │  │ (traces) │   │
+                    │  └───────────────────┘  └──────────────┘  └──────────┘  └──────────┘   │
+                    └─────────────────────────────────────────────────────────────────────────┘
+                                                  │
+                                          gRPC + NATS
+                    ┌─────────────────────────────┼────────────────────────────────────────┐
+                    │                             │                                        │
+              ┌─────▼──────┐          ┌──────────▼───────┐          ┌───────────▼──────┐
+              │ Datacenter A │   │   │ Datacenter B     │   │   │   Datacenter C    │
+              │ ┌─────────────┐   │   │ ┌──────────────┐     │   │ ┌────────────┐   │
+              │ │ Cluster "prod" │ │ │ │ Cluster "staging" │ │   │ │ Cluster "dev" │ │
+              │ │ ┌──────┐ ┌───┐ │   │   │ ┌──────┐ ┌────┐ │     │   │ ┌──────┐ ┌───┐ │
+              │ │ │Agent 1│ │A2│ │   │   │ │Agent1 │ │A2 │ │     │   │ │Agent 1│ │A2│ │
+              │ │ │+libvirt│ │+l│ │   │   │ │+libvirt│ │+l│ │     │   │ │+libvirt│ │+l│ │
+              │ │ └───┬───┘ └─┬┘ │   │   │ └───┬───┘ └─┬┘ │     │   │ └───┬───┘ └─┬┘ │
+              │ │   VMs      VMs│   │   │    VMs    VMs │     │   │    VMs    VMs  │
+              │ └───────────────┘   │   └────────────────┘     │   └────────────────┘
+              └─────────────────────┘   └──────────────────────┘   └───────────────────┘</div>
+
+        <h2 id="network-segmentation">Сегментация сети</h2>
+        <div class="table-wrapper">
+<table>
+<thead><tr><th>Сеть</th><th>Назначение</th><th>NIC/VLAN</th><th>Протокол</th></tr></thead>
+<tbody>
+<tr><td><strong>Management</strong></td><td>Agent ↔ Control Plane (gRPC, NATS)</td><td>eth0 / VLAN 10</td><td>TCP 443, 4222</td></tr>
+<tr><td><strong>Migration</strong></td><td>Hypervisor ↔ Hypervisor (live migration)</td><td>eth1 / VLAN 20 (10G+)</td><td>TCP 49152-49215 (QEMU)</td></tr>
+<tr><td><strong>Storage</strong></td><td>Hypervisor → Ceph/iSCSI (block I/O)</td><td>eth2 / VLAN 30 (25G+)</td><td>RBD 6789, iSCSI 3260</td></tr>
+<tr><td><strong>Guest</strong></td><td>VM guest traffic (isolated)</td><td>virtio / VLAN-tagged</td><td>VM traffic</td></tr>
+</tbody>
+</table>
+        </div>
+
+        <h2 id="db-schemas">DB Схемы</h2>
+        <p>Каждый сервис владеет своей схемой PostgreSQL. Перекрёстный доступ к данным — через gRPC или NATS events, не прямые запросы к DB.</p>
+        <div class="table-wrapper">
+<table>
+<thead><tr><th>Сервис</th><th>Schema</th><th>Основные таблицы</th></tr></thead>
+<tbody>
+<tr><td>Compute</td><td><code>compute_schema</code></td><td><code>vms</code>, <code>clusters</code>, <code>hosts</code>, <code>vm_templates</code>, <code>events</code></td></tr>
+<tr><td>Storage</td><td><code>storage_schema</code></td><td><code>storage_pools</code>, <code>storage_volumes</code>, <code>storage_snapshots</code></td></tr>
+<tr><td>Network</td><td><code>network_schema</code></td><td><code>subnets</code>, <code>ip_addresses</code>, <code>dhcp_leases</code></td></tr>
+<tr><td>Image</td><td><code>image_schema</code></td><td><code>images</code>, <code>image_cache</code>, <code>image_build_tasks</code></td></tr>
+<tr><td>Billing</td><td><code>billing_schema</code></td><td><code>tenants</code>, <code>rate_plans</code>, <code>usage_records</code>, <code>invoices</code>, <code>payments</code></td></tr>
+<tr><td>Backup</td><td><code>backup_schema</code></td><td><code>backups</code></td></tr>
+<tr><td>AI</td><td><code>ai_schema</code></td><td><code>ai_sessions</code>, <code>ai_advisories</code>, <code>ai_predictions</code>, <code>ai_token_usage</code></td></tr>
+</tbody>
+</table>
+        </div>
+
+        <h2 id="communication-stack">Стек коммуникации (безопасный)</h2>
+        <div class="table-wrapper">
+<table>
+<thead><tr><th>Компонент</th><th>Протокол</th><th>Безопасность</th><th>Назначение</th></tr></thead>
+<tbody>
+<tr><td>CLI/Dashboard → API</td><td>REST HTTPS</td><td>JWT auth</td><td>Внешние запросы</td></tr>
+<tr><td>API → Workers</td><td>gRPC</td><td>mTLS (internal CA)</td><td>Синхронный fan-out к бэкенд-сервисам</td></tr>
+<tr><td>API → Workers</td><td>NATS</td><td>NKey + TLS 1.3</td><td>Асинхронная делегация</td></tr>
+<tr><td>Scheduler → Agents</td><td>gRPC mTLS (TLS 1.3)</td><td>Mutual TLS, per-agent certs</td><td>Команды, state sync, bidirectional stream</td></tr>
+<tr><td>Agents → Events</td><td>NATS + NKey + TLS</td><td>Curve25519 NKey auth, TLS 1.3</td><td>Heartbeat, metrics, VM events</td></tr>
+<tr><td>Leader Election</td><td>PostgreSQL advisory locks</td><td>SCRAM-SHA-256, TLS</td><td>Scheduler leader</td></tr>
+<tr><td>Inter-worker</td><td>NATS</td><td>Subject-based permissions</td><td>Кросс-сервисные события (billing, backup, AI)</td></tr>
+</tbody>
+</table>
+        </div>
+
+        <h2 id="pci-dss">PCI-DSS: Разделение Admin/User</h2>
+        <p>PCI-DSS требует строгого разделения обязанностей (SoD). Admin и tenant UI должны быть физически изолированы.</p>
+        <div class="table-wrapper">
+<table>
+<thead><tr><th>Свойство</th><th>Admin Dashboard (/admin/*)</th><th>User Dashboard (/user/*)</th></tr></thead>
+<tbody>
+<tr><td>URL</td><td><code>https://cloud.example.com/admin</code></td><td><code>https://cloud.example.com</code></td></tr>
+<tr><td>SPA</td><td><code>dashboards/admin/</code> (отдельная Vite сборка)</td><td><code>dashboards/user/</code> (отдельная Vite сборка)</td></tr>
+<tr><td>Auth</td><td><code>role == "admin"</code> или <code>"superadmin"</code></td><td><code>role == "tenant_admin"</code> или <code>"tenant_user"</code></td></tr>
+<tr><td>Cookies</td><td><code>qstack_admin_session</code> (HTTP-only, SameSite=Strict)</td><td><code>qstack_user_session</code> (HTTP-only, SameSite=Lax)</td></tr>
+<tr><td>Routes</td><td><code>admin/infra/*</code>, <code>admin/billing/*</code>, <code>admin/audit/*</code></td><td><code>user/vms/*</code>, <code>user/images/*</code>, <code>user/network/*</code></td></tr>
+<tr><td>CORS</td><td><code>Origin: https://cloud.example.com/admin</code></td><td><code>Origin: https://cloud.example.com</code></td></tr>
+<tr><td>CSRF</td><td>Отдельные CSRF токены</td><td>Отдельные CSRF токены</td></tr>
+</tbody>
+</table>
+        </div>
+        <blockquote>
+          <strong>PCI-DSS Requirements:</strong><br>
+          Req 7 — Ограничение доступа к компонентам системы только тем, кому это нужно по работе.<br>
+          Req 8 — Идентификация и аутентификация (MFA для admin).<br>
+          Req 10 — Отслеживание и мониторинг всего доступа.<br>
+          Req 12 — Назначение и управление ролями безопасности (SoD).
+        </blockquote>
+
+        <h2 id="saga-pattern">Паттерн Saga</h2>
+        <p>Мульти-сервисное создание VM через Saga в API Gateway:</p>
+        <div class="ascii-diagram">
+1. API получает POST /v1/vms
+2. API создаёт запись Saga (status: "in_progress")
+3. → Storage.CreateVolume()        [при ошибке: компенсация ничего, возврат ошибки]
+4. → Network.AllocateIP()           [при ошибке: компенсация Storage.DeleteVolume(), возврат]
+5. → Compute.CreateVM()             [при ошибке: компенсация Network.ReleaseIP() + Storage.DeleteVolume()]
+6. → Image.CacheToHost(vm_host)     [async, best effort — VM может загрузиться без кеша]
+7. Saga status: "completed"
+
+State machine: created → running → completed | compensating → compensated | failed</div>
+
+        <h2 id="high-availability">High Availability</h2>
+        <h3 id="pg-ha">PostgreSQL HA (Patroni)</h3>
+        <p>Один PostgreSQL — единственная точка отказа. Для production:</p>
+        <div class="ascii-diagram">
+Patroni (3 nodes) → автоматический failover, синхронная репликация
+  ├── Primary (read/write, все сервисы подключаются сюда)
+  ├── Replica 1 (read-only, автоматический promotion)
+  └── Replica 2 (read-only, автоматический promotion)
+
+Connection pooling: PgBouncer (или PgPool-II) перед Patroni</div>
+
+        <h3 id="live-migration">Live Migration</h3>
+        <div class="table-wrapper">
+<table>
+<thead><tr><th>Тип</th><th>Описание</th><th>Time-to-downtime</th><th>Сеть</th></tr></thead>
+<tbody>
+<tr><td><strong>Shared Storage</strong></td><td>Перенос только памяти (disk shared via Ceph)</td><td>&lt;100ms</td><td>~10G minimum</td></tr>
+<tr><td><strong>Block Replication</strong></td><td>Перенос памяти + disk blocks</td><td>~5-30s</td><td>~25G+ recommended</td></tr>
+</tbody>
+</table>
+        </div>
+
+        <h2 id="secrets">Управление секретами</h2>
+        <div class="table-wrapper">
+<table>
+<thead><tr><th>Уровень</th><th>Хранение</th><th>Использование</th></tr></thead>
+<tbody>
+<tr><td><strong>L1 — K8s Secrets</strong></td><td>base64, RBAC-protected</td><td>Нечувствительный конфиг, internal service tokens</td></tr>
+<tr><td><strong>L2 — Sealed Secrets</strong></td><td>encrypted at rest, Git-committable</td><td>DB passwords, NATS credentials, CA certs</td></tr>
+<tr><td><strong>L3 — OpenBao</strong> (по умолчанию)</td><td>AES-256-GCM, audit trail, dynamic secrets</td><td>Ceph keys, libvirt passwords, Stripe keys, HSM-backed</td></tr>
+<tr><td><strong>L3 — HashiCorp Vault</strong> (альтернатива)</td><td>AES-256-GCM, audit trail, dynamic secrets</td><td>Drop-in альтернатива для существующей Vault инфраструктуры</td></tr>
+<tr><td><strong>L4 — HSM / Cloud KMS</strong></td><td>Hardware enclave</td><td>Root CA key, encryption keys для kubeconfig</td></tr>
+</tbody>
+</table>
+        </div>
+
+        <div class="footer">
+          <span><a href="index.html">← На главную</a></span>
+          <span><a href="services.html">Сервисы →</a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <aside class="toc">
+    <div class="toc-title">Содержание</div>
+    <ul class="toc-list">
+      <li><a href="#monorepo">Monorepo Layout</a></li>
+      <li><a href="#principles">Принципы микросервисов</a></li>
+      <li><a href="#service-boundaries">Границы сервисов</a></li>
+      <li><a href="#communication">Диаграмма коммуникации</a></li>
+      <li><a href="#network-segmentation">Сегментация сети</a></li>
+      <li><a href="#db-schemas">DB Схемы</a></li>
+      <li><a href="#communication-stack">Стек коммуникации</a></li>
+      <li><a href="#pci-dss">PCI-DSS Разделение</a></li>
+      <li><a href="#saga-pattern">Паттерн Saga</a></li>
+      <li><a href="#high-availability">High Availability</a>
+        <ul><li class="toc-h3"><a href="#pg-ha">PostgreSQL HA</a></li><li class="toc-h3"><a href="#live-migration">Live Migration</a></li></ul>
+      </li>
+      <li><a href="#secrets">Управление секретами</a></li>
+    </ul>
+  </aside>
+</main>
+<script src="js/main.js"></script>
+</body>
+</html>
