@@ -36,7 +36,7 @@ NETWORK = "192.168.56.0/24"
 BASE_IP = "192.168.56"
 MIN_RAM_GB = 16
 MIN_CPU = 8
-MIN_DISK_GB = 80
+MIN_DISK_GB = 20  # 1 VM dev; raise to 40+ for multi-node
 
 
 # ── Data ──────────────────────────────────────────────────────────────────────
@@ -83,13 +83,13 @@ TOOLS: list[Tool] = [
     ),
     Tool(
         "talosctl",
-        ["talosctl", "--version"],
+        ["talosctl", "version"],
         description="Talos CLI",
         install_hint="choco install talosctl",
     ),
     Tool(
         "kubectl",
-        ["kubectl", "--version", "--client"],
+        ["kubectl", "version", "--client"],
         description="Kubernetes CLI",
         install_hint="choco install kubernetes-cli",
     ),
@@ -115,17 +115,42 @@ TOOLS: list[Tool] = [
 
 def run_cmd(cmd: list[str], timeout: int = 10) -> tuple[bool, str]:
     """Run command, return (success, output)."""
+    # Try direct PATH first
     try:
         r = subprocess.run(
             cmd, capture_output=True, text=True, timeout=timeout,
         )
-        return r.returncode == 0, (r.stdout + r.stderr).strip()
+        combined = (r.stdout + r.stderr).strip()
+        if r.returncode == 0 or (combined and r.returncode <= 1):
+            return True, combined
     except FileNotFoundError:
-        return False, "not found"
+        pass
     except subprocess.TimeoutExpired:
         return False, "timeout"
     except Exception as e:
         return False, str(e)
+
+    # Fall back: search common Windows install dirs (Chocolatey, etc.)
+    search_dirs = [
+        r"C:\ProgramData\chocolatey\bin",
+        r"C:\Program Files\Oracle\VirtualBox",
+        r"C:\Program Files (x86)\Oracle\VirtualBox",
+    ]
+    for d in search_dirs:
+        if os.path.isdir(d):
+            for ext in ["", ".exe", ".cmd", ".bat"]:
+                candidate = os.path.join(d, cmd[0] + ext)
+                if os.path.isfile(candidate):
+                    try:
+                        r = subprocess.run(
+                            [candidate] + cmd[1:], capture_output=True, text=True, timeout=timeout,
+                        )
+                        combined = (r.stdout + r.stderr).strip()
+                        if r.returncode == 0 or (combined and r.returncode <= 1):
+                            return True, combined
+                    except Exception:
+                        pass
+    return False, "not found"
 
 
 def run_powershell(ps_cmd: str) -> str:
