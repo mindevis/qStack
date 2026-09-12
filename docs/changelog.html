@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Changelog — qStack Docs</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<header class="header">
+  <button class="menu-toggle" aria-label="Меню"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+  <a href="index.html" class="header-logo"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>qStack Docs</span></a>
+  <div class="header-center"><div class="header-search"><svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="search-input" type="text" placeholder="Поиск…" autocomplete="off"><span class="search-shortcut">⌘K</span><div id="search-results" class="search-results"></div></div></div>
+  <div class="header-right"><button class="header-btn" id="lang-toggle">EN</button><button class="header-btn" id="theme-toggle"><span class="theme-icon">🌙</span></button><a href="https://github.com/mindever/qStack" class="header-btn" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 016.02 0c2.3-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.82.58A12.01 12.01 0 0024 12c0-6.63-5.37-12-12-12z"/></svg></a></div>
+</header>
+<div class="sidebar-overlay"></div>
+<nav class="sidebar">
+  <div class="sidebar-group"><div class="sidebar-group-title">Обзор</div><a href="index.html" class="sidebar-link">Введение</a><a href="architecture.html" class="sidebar-link">Архитектура</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">Сервисы</div><a href="services.html#api" class="sidebar-link">API Gateway</a><a href="services.html#compute" class="sidebar-link">Compute</a><a href="services.html#storage" class="sidebar-link">Storage</a><a href="services.html#network" class="sidebar-link">Network</a><a href="services.html#image" class="sidebar-link">Image</a><a href="services.html#billing" class="sidebar-link">Billing</a><a href="services.html#backup" class="sidebar-link">Backup</a><a href="services.html#ai" class="sidebar-link">AI</a><a href="services.html#agent" class="sidebar-link">Agent</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">API</div><a href="api.html" class="sidebar-link">REST API</a><a href="api.html#grpc" class="sidebar-link">gRPC</a><a href="api.html#auth" class="sidebar-link">Авторизация</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">Развёртывание</div><a href="deployment.html" class="sidebar-link">Kubernetes</a><a href="deployment.html#docker-compose" class="sidebar-link">Docker Compose</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">Разработка</div><a href="development.html" class="sidebar-link">Настройка окружения</a><a href="development.html#testing" class="sidebar-link">Тестирование</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">Участие</div><a href="contributing.html" class="sidebar-link">Contributing</a><a href="changelog.html" class="sidebar-link active">Changelog</a></div>
+</nav>
+<main class="layout">
+  <div class="main">
+    <div class="main-inner">
+      <div class="content">
+        <h1>Changelog</h1>
+        <p>История версий qStack — Cloud VM Orchestrator.</p>
+
+        <div class="changelog-entry">
+          <div class="changelog-header">
+            <h2 id="v0.3.0">v0.3.0</h2>
+            <span class="changelog-date">2025-03-15</span>
+            <span class="badge badge-beta">Beta</span>
+          </div>
+          <h3>Added</h3>
+          <ul>
+            <li>VM миграция между хостами (live migration via Libvirt/QEMU)</li>
+            <li>Image caching на гипервизорах (Image service)</li>
+            <li>NATS JetStream streaming для event delivery</li>
+            <li>Certificate management (OpenBao + Vault PKI CA integration)</li>
+            <li>Multi-provider authentication (Password + OAuth2/OIDC + SAML 2.0)</li>
+            <li>K8s Deployment with PDB, HPA для API Gateway</li>
+          </ul>
+          <h3>Changed</h3>
+          <ul>
+            <li>gRPC code generation — unified proto definitions</li>
+            <li>K8s manifests restructured (per-service directories)</li>
+          </ul>
+        </div>
+
+        <div class="changelog-entry">
+          <div class="changelog-header">
+            <h2 id="v0.2.0">v0.2.0</h2>
+            <span class="changelog-date">2025-02-01</span>
+            <span class="badge badge-alpha">Alpha</span>
+          </div>
+          <h3>Added</h3>
+          <ul>
+            <li>Network Service (SDN, IPAM, firewall)</li>
+            <li>Image Service (template management, image conversion)</li>
+            <li>Billing Service (plans, tenants, metering, invoicing, PDF)</li>
+            <li>Backup Service (snapshot, restore, lifecycle)</li>
+            <li>AI Service (assistant, advisor, predictor, auto-heal)</li>
+            <li>Agent — systemd integration, status reporting, heartbeat</li>
+            <li>GlitchTip self-hosted Sentry (error tracking)</li>
+            <li>Observability stack: Prometheus + Grafana + Loki + OpenTelemetry</li>
+          </ul>
+          <h3>Changed</h3>
+          <ul>
+            <li>NATS event-driven architecture (отказ от прямых gRPC calls между сервисами)</li>
+            <li>Monorepo structure — Go workspace (<code>go.work</code>)</li>
+          </ul>
+        </div>
+
+        <div class="changelog-entry">
+          <div class="changelog-header">
+            <h2 id="v0.1.0">v0.1.0</h2>
+            <span class="changelog-date">2025-01-15</span>
+            <span class="badge badge-alpha">Alpha</span>
+          </div>
+          <h3>Added</h3>
+          <ul>
+            <li>API Gateway (REST API, auth, rate limiting)</li>
+            <li>Compute Service (VM CRUD, lifecycle, Libvirt integration)</li>
+            <li>Storage Service (volumes, LVM, qcow2)</li>
+            <li>Dashboard — React admin panel (basic)</li>
+            <li>PostgreSQL multi-schema setup (7 schemas)</li>
+            <li>Monorepo with Makefile orchestration</li>
+            <li>Docker Compose development environment</li>
+          </ul>
+        </div>
+
+        <h2 id="planned">Планируемые версии</h2>
+        <div class="changelog-entry ch">
+          <div class="changelog-header">
+            <h2 id="v0.4.0">v0.4.0 (planned)</h2>
+            <span class="changelog-badge badge-planned">Planned</span>
+          </div>
+          <h3>Added</h3>
+          <ul>
+            <li>Multi-cluster support (edge deployment)</li>
+            <li>VM live snapshot / restore without downtime</li>
+            <li>Dashboard — billing, monitoring, AI assistant UI</li>
+            <li>Feature flags for risky changes</li>
+            <li>Canary deployment strategy</li>
+            <li>Blue-green deployment support</li>
+          </ul>
+        </div>
+
+        <h2 id="roadmap">Roadmap (Фазы)</h2>
+        <div class="table-wrapper">
+<table>
+<thead><tr><th>Фаза</th><th>Содержание</th><th>Статус</th></tr></thead>
+<tbody>
+<tr><td><strong>Phase 1</strong></td><td>Monorepo, Compute + Storage (basic), Postgres, Libvirt/QEMU</td><td>✅ Done</td></tr>
+<tr><td><strong>Phase 2</strong></td><td>Network, Image, Agent, basic Dashboard</td><td>🚧 In Progress</td></tr>
+<tr><td><strong>Phase 3</strong></td><td>Observability (Prometheus, Grafana, GlitchTip)</td><td>📋 Planned</td></tr>
+<tr><td><strong>Phase 4</strong></td><td>Billing + Backup</td><td>📋 Planned</td></tr>
+<tr><td><strong>Phase 5</strong></td><td>AI (assistant, advisor, predictor, auto-heal)</td><td>📋 Planned</td></tr>
+<tr><td><strong>Phase 6</strong></td><td>PCI-DSS separation, Dashboard v2, API v2</td><td>📋 Planned</td></tr>
+<tr><td><strong>Phase 7</strong></td><td>Security (mTLS, rate limiting, RBAC, audit log)</td><td>📋 Planned</td></tr>
+<tr><td><strong>Phase 8</strong></td><td>Multi-cluster, edge, HA</td><td>📋 Planned</td></tr>
+<tr><td><strong>Phase 9</strong></td><td>Billing v2 (multi-currency, real-time)</td><td>📋 Planned</td></tr>
+<tr><td><strong>Phase 10</strong></td><td>Dashboard — AI assistant, billing, monitoring</td><td>📋 Planned</td></tr>
+<tr><td><strong>Phase 11</strong></td><td>Multi-tenancy v2, quota enforcement</td><td>📋 Planned</td></tr>
+<tr><td><strong>Phase 12</strong></td><td>Certificates, Vault, secrets management</td><td>📋 Planned</td></tr>
+<tr><td><strong>Phase 13</strong></td><td>Canary, blue-green, feature flags</td><td>📋 Planned</td></tr>
+<tr><td><strong>Phase 14</strong></td><td>Performance tuning, benchmarks, load tests</td><td>📋 Planned</td></tr>
+<tr><td><strong>Phase 15</strong></td><td>Stress testing, chaos engineering</td><td>📋 Planned</td></tr>
+</tbody>
+</table>
+        </div>
+
+        <div class="footer">
+          <span><a href="contributing.html">← Contributing</a></span>
+          <span><a href="index.html">Начало →</a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <aside class="toc">
+    <div class="toc-title">Содержание</div>
+    <ul class="toc-list">
+      <li><a href="#v0.3.0">v0.3.0</a></li>
+      <li><a href="#v0.2.0">v0.2.0</a></li>
+      <li><a href="#v0.1.0">v0.1.0</a></li>
+      <li><a href="#planned">Планируемые</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
+    </ul>
+  </aside>
+</main>
+<script src="js/main.js"></script>
+</body>
+</html>

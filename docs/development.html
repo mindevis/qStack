@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Разработка — qStack Docs</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<header class="header">
+  <button class="menu-toggle" aria-label="Меню"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+  <a href="index.html" class="header-logo"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>qStack Docs</span></a>
+  <div class="header-center"><div class="header-search"><svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="search-input" type="text" placeholder="Поиск…" autocomplete="off"><span class="search-shortcut">⌘K</span><div id="search-results" class="search-results"></div></div></div>
+  <div class="header-right"><button class="header-btn" id="lang-toggle">EN</button><button class="header-btn" id="theme-toggle"><span class="theme-icon">🌙</span></button><a href="https://github.com/mindever/qStack" class="header-btn" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 016.02 0c2.3-1.55 3.3-1.23 3.3-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.82.58A12.01 12.01 0 0024 12c0-6.63-5.37-12-12-12z"/></svg></a></div>
+</header>
+<div class="sidebar-overlay"></div>
+<nav class="sidebar">
+  <div class="sidebar-group"><div class="sidebar-group-title">Обзор</div><a href="index.html" class="sidebar-link">Введение</a><a href="architecture.html" class="sidebar-link">Архитектура</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">Сервисы</div><a href="services.html#api" class="sidebar-link">API Gateway</a><a href="services.html#compute" class="sidebar-link">Compute</a><a href="services.html#storage" class="sidebar-link">Storage</a><a href="services.html#network" class="sidebar-link">Network</a><a href="services.html#image" class="sidebar-link">Image</a><a href="services.html#billing" class="sidebar-link">Billing</a><a href="services.html#backup" class="sidebar-link">Backup</a><a href="services.html#ai" class="sidebar-link">AI</a><a href="services.html#agent" class="sidebar-link">Agent</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">API</div><a href="api.html" class="sidebar-link">REST API</a><a href="api.html#grpc" class="sidebar-link">gRPC</a><a href="api.html#auth" class="sidebar-link">Авторизация</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">Развёртывание</div><a href="deployment.html" class="sidebar-link">Kubernetes</a><a href="deployment.html#docker-compose" class="sidebar-link">Docker Compose</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">Разработка</div><a href="development.html" class="sidebar-link active">Настройка окружения</a><a href="development.html#testing" class="sidebar-link">Тестирование</a><a href="development.html#debugging" class="sidebar-link">Отладка</a></div>
+  <div class="sidebar-group"><div class="sidebar-group-title">Участие</div><a href="contributing.html" class="sidebar-link">Contributing</a><a href="changelog.html" class="sidebar-link">Changelog</a></div>
+</nav>
+<main class="layout">
+  <div class="main">
+    <div class="main-inner">
+      <div class="content">
+        <h1>Разработка</h1>
+        <p>Инструкция по настройке локальной среды разработки для qStack.</p>
+
+        <h2 id="prerequisites">Пререквизиты</h2>
+        <div class="table-wrapper">
+<table>
+<thead><tr><th>Инструмент</th><th>Версия</th><th>Назначение</th></tr></thead>
+<tbody>
+<tr><td><strong>Go</strong></td><td>1.23+</td><td>Язык всех backend сервисов</td></tr>
+<tr><td><strong>Docker</strong></td><td>24+</td><td>Контейнеризация, docker-compose</td></tr>
+<tr><td><strong>PostgreSQL</strong></td><td>16+</td><td>Базы данных (локально или через Docker)</td></tr>
+<tr><td><strong>NATS</strong></td><td>2.10+</td><td>Event bus (локально через Docker)</td></tr>
+<tr><td><strong>Node.js</strong></td><td>20+</td><td>Dashboard (React + TypeScript)</td></tr>
+<tr><td><strong>Make</strong></td><td>3.81+</td><td>Обёртка над common задачами</td></tr>
+<tr><td><strong>golangci-lint</strong></td><td>latest</td><td>Linter для Go</td></tr>
+<tr><td><strong>protoc</strong></td><td>3.x</td><td>Генерация gRPC/Protobuf кода</td></tr>
+</tbody>
+</table>
+        </div>
+
+        <h2 id="setup">Быстрый старт</h2>
+        <div class="code-header">Bash</div>
+<pre><code># 1. Клонировать репозиторий
+git clone https://github.com/mindever/qStack.git
+cd qStack
+
+# 2. Запустить инфраструктуру (PostgreSQL, NATS, Observability)
+make infra-up
+
+# 3. Инициализировать БД
+make db-migrate
+
+# 4. Сгенерировать gRPC код
+make proto-gen
+
+# 5. Запустить сервисы
+make dev</code></pre>
+
+        <h3>Workspace Structure</h3>
+        <div class="code-header">qStack/</div>
+<pre><code>qStack/
+├── services/               # Все 9 сервисов
+│   ├── api/                # API Gateway
+│   │   ├── cmd/api/
+│   │   ├── internal/       # бизнес-логика
+│   │   ├── Dockerfile
+│   │   └── go.mod
+│   ├── compute/
+│   ├── storage/
+│   ├── network/
+│   ├── image/
+│   ├── billing/
+│   ├── backup/
+│   ├── ai/
+│   └── agent/
+├── proto/                  # Protobuf определения
+│   ├── qstack/v1/
+│   │   ├── compute.proto
+│   │   ├── storage.proto
+│   │   └── ...
+├── pkg/                    # Общая библиотека
+│   ├── grpc/               # Генерированный gRPC код
+│   ├── config/
+│   ├── db/
+│   └── ...
+├── cmd/                    # CLI tools
+├── dashboard/              # React Dashboard
+├── k8s/                    # Kubernetes manifests
+├── docker-compose.yml
+├── Makefile
+├── go.work                 # Go workspace
+└── go.work.sum</code></pre>
+
+        <h2 id="docker-compose">Docker Compose (Development)</h2>
+        <p>Для локальной разработки используется <code>docker-compose.yml</code>:</p>
+        <div class="code-header">docker-compose.yml</div>
+<pre><code>services:
+  # Infrastructure
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: qstack
+      POSTGRES_USER: qstack
+      POSTGRES_PASSWORD: qstack
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+
+  nats:
+    image: nats:2.10
+    command: ["-js", "-store_dir", "/data"]
+    ports: ["4222:4222", "8222:8222"]
+    volumes: ["natsdata:/data"]
+
+  # Observability stack
+  prometheus:
+    image: prom/prometheus:latest
+    ports: ["9090:9090"]
+    volumes: ["./prometheus.yml:/etc/prometheus/prometheus.yml"]
+
+  grafana:
+    image: grafana/grafana:latest
+    ports: ["3000:3000"]
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+
+  loki:
+    image: grafana/loki:2.9
+    ports: ["3100:3100"]
+
+  # Self-hosted Sentry / GlitchTip
+  glitchtip:
+    image: glitchtip/glitchtip:latest
+    ports: ["8081:8000"]
+
+volumes:
+  pgdata:
+  natsdata:</code></pre>
+
+        <h3>Запуск инфраструктуры</h3>
+        <div class="code-header">Bash</div>
+<pre><code># Поднять только инфра (Postgres + NATS + Observability)
+make infra-up
+
+# Поднять всё (инфра + все сервисы)
+make compose-up
+
+# Остановить
+make infra-down / make compose-down</code></pre>
+
+        <h2 id="hot-reload">Hot Reload</h2>
+        <p>Каждый сервис может работать в режиме hot reload с использованием <code>air</code>:</p>
+        <div class="code-header">Bash</div>
+<pre><code># Установить air
+go install github.com/cosmtrek/air@latest
+
+# Запустить сервис с hot reload
+cd services/compute
+air
+
+# Или через Makefile
+make dev SERVICE=compute</code></pre>
+        <p><code>air</code> отслеживает изменения файлов и автоматически пересобирает + перезапускает сервис при каждом save. gRPC connections reconnect автоматически, NATS reconnect встроен.</p>
+
+        <h3>Dashboard Hot Reload</h3>
+        <div class="code-header">Bash</div>
+<pre><code>cd dashboard
+npm install
+npm run dev  # Vite dev server с hot module replacement</code></pre>
+
+        <h2 id="testing">Тестирование</h2>
+        <h3>Unit Tests</h3>
+        <div class="code-header">Bash</div>
+<pre><code># Все тесты
+make test
+
+# Тесты конкретного сервиса
+make test SERVICE=compute
+
+# С покрытием
+make test-coverage
+# Генерирует coverage.html в coverage/</code></pre>
+        <div class="code-header">Go</div>
+<pre><code>// Example unit test
+func TestCreateVM(t *testing.T) {
+    ctx := context.Background()
+    db := testdb.New(t)
+    svc := NewComputeService(db, nil, nil)
+
+    req := CreateVMRequest{
+        TenantID: "test-tenant",
+        ImageID:  "ubuntu-24.04",
+        FlavourID: "standard-2",
+    }
+
+    vm, err := svc.CreateVM(ctx, &req)
+    require.NoError(t, err)
+    require.NotEmpty(t, vm.ID)
+    require.Equal(t, "pending", vm.Status)
+}</code></pre>
+
+        <h3>Integration Tests</h3>
+        <p>Integration тесты запускаются в Docker Compose окружении:</p>
+        <div class="code-header">Bash</div>
+<pre><code># Запустить integration тесты (поднимает compose, тестирует, останавливает)
+make integration-test</code></pre>
+
+        <h3>E2E Tests</h3>
+        <p>E2E тесты запускаются в kind (Kubernetes in Docker) cluster:</p>
+        <div class="code-header">Bash</div>
+<pre><code># Поднять kind cluster
+make kind-up
+
+# Развернуть все сервисы
+make kind-deploy
+
+# Запустить E2E тесты
+make kind-e2e
+
+# Очистить
+make kind-down</code></pre>
+
+        <h2 id="linting">Linting</h2>
+        <div class="code-header">Bash</div>
+<pre><code># Lint all services
+make lint
+
+# Lint specific service
+make lint SERVICE=api
+
+# Auto-fix
+make lint-fix</code></pre>
+        <p>Используется <code>golangci-lint</code> с набором линтеров: staticcheck, revive, gci, gofmt, goimports, gosimple, ineffassign, unused.</p>
+
+        <h2 id="debugging">Отладка</h2>
+        <h3>Delve Debugger</h3>
+        <div class="code-header">Bash</div>
+<pre><code># Запустить сервис под Delve
+dlm debug ./cmd/api
+
+# Или через VS Code (launch.json)
+{
+  "name": "Launch qStack API",
+  "type": "go",
+  "request": "launch",
+  "mode": "debug",
+  "program": "${workspaceFolder}/services/api/cmd/api",
+  "env": {
+    "QSTACK_NATS_URL": "nats://localhost:4222",
+    "QSTACK_PG_URL": "postgres://qstack:qstack@localhost:5432/qstack"
+  }
+}</code></pre>
+
+        <h3>Debug Mode</h3>
+        <p>Каждый сервис имеет debug mode, включаемый через <code>QSTACK_DEBUG=true</code>:</p>
+        <ul>
+          <li><strong>Verbose logging</strong> — каждый gRPC call, NATS message, DB query</li>
+          <li><strong>pprof</strong> — <code>/debug/pprof</code> endpoint (CPU, mem, goroutine profiles)</li>
+          <li><strong>Slow request logging</strong> — запросы > 1s логируются с stack trace</li>
+          <li><strong>NATS debug</strong> — все published/subscribed messages логируются</li>
+        </ul>
+
+        <h2 id="observability-dev">Observability (Локально)</h2>
+        <div class="code-header">Bash</div>
+<pre><code># Поднять observability stack
+make observability-up
+
+# Доступ к панелям:
+# Grafana  → http://localhost:3000 (admin/admin)
+# Prometheus → http://localhost:9090
+# GlitchTip  → http://localhost:8081</code></pre>
+
+        <h2 id="makefile-commands">Makefile Commands</h2>
+        <div class="table-wrapper">
+<table>
+<thead><tr><th>Команда</th><th>Описание</th></tr></thead>
+<tbody>
+<tr><td><code>make build</code></td><td>Собрать все сервисы</td></tr>
+<tr><td><code>make test</code></td><td>Unit тесты всех сервисов</td></tr>
+<tr><td><code>make lint</code></td><td>Lint (golangci-lint)</td></tr>
+<tr><td><code>make proto-gen</code></td><td>Генерация gRPC/Protobuf кода</td></tr>
+<tr><td><code>make infra-up</code></td><td>Поднять Postgres + NATS + Observability</td></tr>
+<tr><td><code>make compose-up</code></td><td>Поднять всё через docker-compose</td></tr>
+<tr><td><code>make dev SERVICE=api</code></td><td>Запустить сервис с hot reload (air)</td></tr>
+<tr><td><code>make kind-up</code></td><td>Поднять kind cluster</td></tr>
+<tr><td><code>make kind-deploy</code></td><td>Развернуть в kind</td></tr>
+<tr><td><code>make kind-e2e</code></td><td>Запустить E2E в kind</td></tr>
+<tr><td><code>make db-migrate</code></td><td>Аттенат миграций БД</td></tr>
+<tr><td><code>make observability-up</code></td><td>Поднять Prometheus + Grafana + GlitchTip</td></tr>
+</tbody>
+</table>
+        </div>
+
+        <div class="footer">
+          <span><a href="deployment.html">← Развёртывание</a></span>
+          <span><a href="contributing.html">Contributing →</a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <aside class="toc">
+    <div class="toc-title">Содержание</div>
+    <ul class="toc-list">
+      <li><a href="#prerequisites">Пререквизиты</a></li>
+      <li><a href="#setup">Быстрый старт</a></li>
+      <li><a href="#docker-compose">Docker Compose</a></li>
+      <li><a href="#hot-reload">Hot Reload</a></li>
+      <li><a href="#testing">Тестирование</a>
+        <ul><li class="toc-h3"><a href="#testing">Unit Tests</a></li><li class="toc-h3"><a href="#testing">Integration Tests</a></li><li class="toc-h3"><a href="#testing">E2E Tests</a></li></ul>
+      </li>
+      <li><a href="#linting">Linting</a></li>
+      <li><a href="#debugging">Отладка</a>
+        <ul><li class="toc-h3"><a href="#debugging">Delve Debugger</a></li><li class="toc-h3"><a href="#debugging">Debug Mode</a></li></ul>
+      </li>
+      <li><a href="#observability-dev">Observability</a></li>
+      <li><a href="#makefile-commands">Makefile Commands</a></li>
+    </ul>
+  </aside>
+</main>
+<script src="js/main.js"></script>
+</body>
+</html>
