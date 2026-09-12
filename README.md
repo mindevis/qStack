@@ -18,19 +18,7 @@
 | [CHANGELOG.md](./CHANGELOG.md) | История версий |
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | Правила внесения вклада |
 
-## 🚀 Быстрый старт
-
-```bash
-git clone https://github.com/mindevis/qStack.git && cd qStack
-
-# Локальная инфраструктура (infra + все сервисы)
-docker-compose up -d
-
-# Сборка
-make build-all && make test-all
-```
-
-Детальная настройка разработки → **[Development](https://github.com/mindevis/qStack/wiki/Development)**
+Подробная настройка разработки → **[Development](https://github.com/mindevis/qStack/wiki/Development)**
 
 ## 🏗 Сервисы (9 microservices)
 
@@ -66,18 +54,6 @@ Distributed cloud VM orchestrator on Go with declarative approach (desired/actua
 | **[GitHub Wiki](https://github.com/mindevis/qStack/wiki)** | Full docs: DB schemas, gRPC API, NATS events, contributing |
 | [CHANGELOG.md](./CHANGELOG.md) | Version history |
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | Contribution guidelines |
-
-## 🚀 Quick Start
-
-```bash
-git clone https://github.com/mindevis/qStack.git && cd qStack
-
-# Local infrastructure (infra + all services)
-docker-compose up -d
-
-# Build & test
-make build-all && make test-all
-```
 
 Detailed dev setup → **[Development](https://github.com/mindevis/qStack/wiki/Development)**
 
